@@ -730,6 +730,7 @@ function showResults() {
   document.getElementById('results-section').style.display = 'block';
 
   const { dimScores, overall } = calculateScores();
+  saveToHistory(dimScores, overall);
   const maturity = getMaturityLevel(overall);
 
   // 结果头部
@@ -1016,4 +1017,175 @@ function renderAdvice(dimScores) {
     <h2>个性化成长建议</h2>
     <div class="advice-list">${adviceItems}</div>
   `;
+}
+
+// ===== 历史记录 =====
+const HISTORY_KEY = 'maturity_test_history';
+
+function saveToHistory(dimScores, overall) {
+    try {
+        const entry = {
+            id: Date.now(),
+            date: new Date().toLocaleString('zh-CN', { year:'numeric', month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }),
+            overall: overall,
+            dimScores: dimScores,
+            level: getMaturityLevel(overall).label
+        };
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        history.unshift(entry);
+        if (history.length > 30) history.length = 30;
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    } catch(e) {}
+}
+
+function showHistory() {
+    hideAll();
+    document.getElementById('history-section').style.display = 'block';
+    renderHistory();
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderHistory() {
+    const listEl = document.getElementById('history-list');
+    const emptyEl = document.getElementById('history-empty');
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+    if (history.length === 0) {
+        listEl.innerHTML = '';
+        emptyEl.style.display = 'block';
+        return;
+    }
+    emptyEl.style.display = 'none';
+
+    listEl.innerHTML = history.map((r,i) => {
+        const maturity = getMaturityLevel(r.overall);
+        const sorted = Object.entries(r.dimScores).sort((a,b) => b[1] - a[1]);
+        const topDim = DIMENSIONS.find(d => d.id === sorted[0][0]);
+        return '<div class="dimension-card" style="cursor:pointer;margin-bottom:10px;display:flex;align-items:center;gap:16px;" onclick="viewHistory(' + i + ')">' +
+            '<span style="font-size:3rem;">' + maturity.emoji + '</span>' +
+            '<div style="flex:1;min-width:0;">' +
+                '<div style="font-weight:700;font-size:1.05rem;">' + maturity.label + ' · 综合 ' + r.overall + '分</div>' +
+                '<div style="font-size:0.82rem;color:var(--text-secondary);">' + r.date + '</div>' +
+                '<div style="font-size:0.78rem;color:var(--text-light);margin-top:2px;">' + (topDim ? '最高维度: ' + topDim.icon + ' ' + topDim.name : '') + '</div>' +
+            '</div>' +
+            '<button onclick="event.stopPropagation();deleteHistory(' + i + ')" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--text-light);padding:4px 8px;">✕</button>' +
+        '</div>';
+    }).join('');
+}
+
+function viewHistory(index) {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    if (!history[index]) return;
+    const r = history[index];
+
+    hideAll();
+    document.getElementById('results-section').style.display = 'block';
+
+    const maturity = getMaturityLevel(r.overall);
+
+    document.getElementById('maturity-badge').innerHTML = '<span class="badge-emoji">' + maturity.emoji + '</span>';
+    document.getElementById('maturity-badge').className = 'maturity-badge level-' + maturity.level;
+    document.getElementById('results-level').textContent = maturity.label + ' · 综合得分 ' + r.overall + ' 分';
+    document.getElementById('results-summary').textContent = maturity.summary;
+
+    renderScoreCards(r.dimScores, r.overall);
+    renderRadarChart(r.dimScores);
+    renderBarChart(r.dimScores);
+    renderDimensionAnalysis(r.dimScores);
+    renderAdvice(r.dimScores);
+
+    const actions = document.querySelector('.results-actions');
+    if (actions) {
+        actions.innerHTML = '<button class="btn-primary" onclick="showHistory()">← 返回历史</button>' +
+            '<button class="btn-secondary" onclick="restartTest()">重新测试</button>' +
+            '<button class="btn-secondary" onclick="showEncyclopedia()">📖 成熟度图鉴</button>';
+    }
+
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function deleteHistory(index) {
+    if (!confirm('确定删除这条记录吗？')) return;
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    history.splice(index, 1);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    renderHistory();
+}
+
+function clearHistory() {
+    if (!confirm('确定要清空所有历史记录吗？此操作不可恢复。')) return;
+    localStorage.removeItem(HISTORY_KEY);
+    renderHistory();
+}
+
+function backToLanding() {
+    hideAll();
+    document.getElementById('landing-section').style.display = 'flex';
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function hideAll() {
+    ['landing-section','test-section','results-section','encyclopedia-section','history-section'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+}
+
+// ===== 成熟度图鉴 =====
+function showEncyclopedia() {
+    hideAll();
+    document.getElementById('encyclopedia-section').style.display = 'block';
+    renderMaturityLevels();
+    renderEncyDimensions();
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderMaturityLevels() {
+    const grid = document.getElementById('maturity-levels-grid');
+    const levels = [
+        { level:5, emoji:'🏔️', name:'高度成熟', score:'85-100', color:'#27AE60',
+          desc:'拥有出色的情绪管理能力、清晰的自我认知和深刻的人际洞察力。能在复杂多变的环境中保持内心稳定，同时持续追求自我成长。',
+          traits:'情绪稳定 | 自我觉察 | 深度共情 | 持续成长 | 平衡有度' },
+        { level:4, emoji:'🌳', name:'成熟稳定', score:'70-84', color:'#4AAD8C',
+          desc:'在大多数维度上表现稳定。具备较好的自我调节能力和人际处理技巧，面对生活的挑战通常能从容应对。',
+          traits:'情绪调节 | 自我认知 | 责任感 | 人际成熟 | 目标明确' },
+        { level:3, emoji:'🌿', name:'趋于成熟', score:'50-69', color:'#F4A742',
+          desc:'正在走向心理成熟的道路上，某些维度已有较好的基础，但也存在一些需要重点关注的领域。这恰恰是成长的最佳阶段。',
+          traits:'发展中的自控力 | 基本人际能力 | 偶有情绪波动 | 学习成长中' },
+        { level:2, emoji:'🌱', name:'探索发展', score:'30-49', color:'#E8A42E',
+          desc:'处于心理成熟的探索发展期。自我认知还在逐步建立，情绪和行为的调节能力正在形成。每个人的成熟都是一个渐进的过程。',
+          traits:'建立自我认知 | 学习情绪管理 | 探索人际边界 | 逐步建立责任感' },
+        { level:1, emoji:'🌰', name:'初始成长', score:'0-29', color:'#C0504D',
+          desc:'正处于心理成熟的初始成长阶段。请记住，心理成熟不是天生的，而是可以通过学习和练习不断提升的能力。',
+          traits:'开启自我探索 | 寻求外部支持 | 学习基本情绪管理 | 建立成长意识' }
+    ];
+
+    grid.innerHTML = levels.map(l =>
+        '<div class="dimension-card" style="border-left:4px solid ' + l.color + ';margin-bottom:12px;">' +
+            '<div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">' +
+                '<span style="font-size:2.5rem;">' + l.emoji + '</span>' +
+                '<div>' +
+                    '<div style="font-weight:700;font-size:1.1rem;">Lv.' + l.level + ' ' + l.name + '</div>' +
+                    '<div style="font-size:0.85rem;color:var(--text-secondary);">得分区间：' + l.score + '</div>' +
+                '</div>' +
+            '</div>' +
+            '<p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.7;">' + l.desc + '</p>' +
+            '<div style="margin-top:8px;font-size:0.8rem;color:var(--text-light);">🔑 ' + l.traits + '</div>' +
+        '</div>'
+    ).join('');
+}
+
+function renderEncyDimensions() {
+    const list = document.getElementById('ency-dim-list');
+    list.innerHTML = DIMENSIONS.map(d =>
+        '<div class="dimension-card" style="border-left:4px solid ' + d.color + ';">' +
+            '<div class="dim-header">' +
+                '<span class="dim-name" style="color:' + d.color + ';">' + d.icon + ' ' + d.name + '</span>' +
+            '</div>' +
+            '<p style="font-size:0.9rem;color:var(--text-secondary);line-height:1.7;">' + d.desc + '</p>' +
+            '<div style="margin-top:6px;font-size:0.82rem;color:var(--text-light);">' +
+                '💡 高分段：' + getDimInterpretation(d.id, 80).substring(0, 80) + '...' +
+            '</div>' +
+        '</div>'
+    ).join('');
 }

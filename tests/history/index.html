@@ -34,6 +34,10 @@
     </div>
   </div>
   <button class="btn btn-primary" onclick="startTest()">开始测试 →</button>
+  <div style="margin-top:14px;display:flex;gap:10px;justify-content:center;">
+    <button class="btn btn-secondary btn-sm" onclick="showEncyclopedia()">📖 人物图鉴</button>
+    <button class="btn btn-secondary btn-sm" onclick="showHistory()">📋 历史记录</button>
+  </div>
   <p class="start-hint">约需 8 分钟</p>
 </section>
 
@@ -94,9 +98,44 @@
   <div class="share-section">
     <button class="btn btn-primary" onclick="shareResult()">📋 复制结果分享</button>
   </div>
+  <div class="share-section" style="margin-top:8px;">
+    <button class="btn btn-secondary btn-sm" onclick="showHistory()" style="margin:0 6px;">📋 历史记录</button>
+    <button class="btn btn-secondary btn-sm" onclick="showEncyclopedia()" style="margin:0 6px;">📖 人物图鉴</button>
+  </div>
 
   <div class="retake">
     <button class="btn btn-secondary btn-sm" onclick="retakeTest()">🔄 重新测试</button>
+  </div>
+</section>
+
+<!-- ===== 历史记录页 ===== -->
+<section class="history-page" id="historyPage" style="display:none;">
+  <div style="max-width:700px;margin:0 auto;padding:2rem 1.5rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+      <h2 style="font-size:1.5rem;color:var(--primary);">📋 测试历史记录</h2>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary btn-sm" onclick="clearHistory()" style="color:#D04040;border-color:#FFD0D0;">🗑 清空</button>
+        <button class="btn btn-secondary btn-sm" onclick="backToLanding()">← 返回首页</button>
+      </div>
+    </div>
+    <div id="historyList"></div>
+    <div id="historyEmpty" style="display:none;text-align:center;padding:60px 20px;color:#888;">
+      <div style="font-size:64px;">📭</div>
+      <p style="font-size:1.1rem;margin:16px 0;">还没有测试记录</p>
+      <button class="btn btn-primary" onclick="backToLanding();startTest();">开始第一次测试</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 人物图鉴页 ===== -->
+<section class="encyclopedia-page" id="encyclopediaPage" style="display:none;">
+  <div style="max-width:900px;margin:0 auto;padding:2rem 1.5rem;">
+    <div style="text-align:center;margin-bottom:32px;position:relative;">
+      <button class="btn btn-secondary btn-sm" onclick="backToLanding()" style="position:absolute;left:0;top:0;">← 返回</button>
+      <h2 style="font-size:2rem;font-weight:900;color:var(--primary);">📖 历史人物图鉴</h2>
+      <p style="color:var(--text-secondary);margin-top:8px;">点击人物卡片查看详细档案 · 共16位历史人物</p>
+    </div>
+    <div class="other-grid" id="figureGallery"></div>
   </div>
 </section>
 

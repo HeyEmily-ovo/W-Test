@@ -275,3 +275,15 @@ body {
 }
 
 .hidden { display: none !important; }
+
+/* ===== 历史记录页 & 人物图鉴页 ===== */
+.history-page, .encyclopedia-page {
+  min-height: 100vh;
+  animation: fadeIn 0.4s ease;
+}
+
+.encyclopedia-page .other-figure:hover {
+  border-color: var(--gold) !important;
+  transform: translateY(-4px) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}

@@ -1076,6 +1076,8 @@
             <div class="tab-container">
                 <button class="tab-btn active" onclick="showTab('test')">开始测试</button>
                 <button class="tab-btn" onclick="showTab('types')">16种人格</button>
+                <button class="tab-btn" onclick="showTab('encyclopedia')">📖 MBTI图鉴</button>
+                <button class="tab-btn" onclick="showTab('history')">📋 历史记录</button>
                 <button class="tab-btn" onclick="showTab('about')">关于MBTI</button>
             </div>
 
@@ -1486,6 +1488,44 @@
                     </p>
                 </div>
             </div>
+
+            <!-- ===== MBTI图鉴页 ===== -->
+            <div id="encyclopedia" class="tab-content">
+                <div class="intro-section">
+                    <h2>📖 MBTI 人格图鉴</h2>
+                    <p>点击卡片翻转查看16种人格的详细档案，了解每种人格的独特魅力</p>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:20px;" id="ency-filter-bar"></div>
+                <div class="personality-grid" id="ency-grid"></div>
+                <div style="margin:32px 0 16px;">
+                    <h3 style="text-align:center;color:#2c3e50;">💞 配对兼容度速查</h3>
+                    <p style="text-align:center;font-size:0.85rem;color:#666;margin-bottom:12px;">基于荣格认知功能理论，选择两种人格查看匹配度</p>
+                    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;align-items:center;margin-bottom:16px;">
+                        <select id="mbti-match-a" onchange="updateMbtiMatch()" style="padding:8px 14px;border-radius:20px;border:2px solid #667eea;font-size:14px;font-family:inherit;"></select>
+                        <span style="font-weight:700;color:#667eea;">×</span>
+                        <select id="mbti-match-b" onchange="updateMbtiMatch()" style="padding:8px 14px;border-radius:20px;border:2px solid #667eea;font-size:14px;font-family:inherit;"></select>
+                    </div>
+                    <div id="mbti-match-result" style="text-align:center;padding:16px;background:#f8f9fa;border-radius:12px;min-height:60px;max-width:500px;margin:0 auto;"></div>
+                </div>
+            </div>
+
+            <!-- ===== 历史记录页 ===== -->
+            <div id="history" class="tab-content">
+                <div class="intro-section">
+                    <h2>📋 测试历史记录</h2>
+                    <p>你过去做过的所有MBTI测试结果都保存在这里（存储在本地浏览器中）</p>
+                    <div style="margin-top:16px;">
+                        <button class="tab-btn" style="background:#e74c3c;margin:0 6px;border:none;color:#fff;" onclick="clearMbtiHistory()">🗑 清空全部</button>
+                    </div>
+                </div>
+                <div id="mbti-history-list" style="max-width:700px;margin:0 auto;"></div>
+                <div id="mbti-history-empty" style="display:none;text-align:center;padding:60px 20px;">
+                    <div style="font-size:64px;margin-bottom:16px;">📭</div>
+                    <p style="color:#666;font-size:18px;">还没有测试记录</p>
+                    <button class="tab-btn" style="margin-top:20px;" onclick="showTab('test');document.getElementById('intro-section').style.display='block';document.getElementById('test-content').style.display='none';document.getElementById('result').style.display='none';">开始第一次测试</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -2343,12 +2383,302 @@
                     const typeName = this.querySelector('h3').textContent;
                     const nickname = this.querySelector('.nickname').textContent;
                     const description = this.querySelector('p').textContent;
-                    
+
                     // 创建弹出详情
                     alert(`${typeCode} - ${typeName}\n${nickname}\n\n${description}\n\n点击确定返回`);
                 });
             });
         });
+
+        // ==================== MBTI 历史记录 ====================
+        const MBTI_HISTORY_KEY = 'mbti_test_history';
+
+        function saveMbtiToHistory(type, percentages, description) {
+            try {
+                const history = JSON.parse(localStorage.getItem(MBTI_HISTORY_KEY) || '[]');
+                history.unshift({
+                    id: Date.now(),
+                    date: new Date().toLocaleString('zh-CN', { year:'numeric', month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }),
+                    type: type,
+                    typeName: description.name,
+                    percentages: percentages,
+                    traits: description.traits
+                });
+                if (history.length > 30) history.length = 30;
+                localStorage.setItem(MBTI_HISTORY_KEY, JSON.stringify(history));
+            } catch(e) {}
+        }
+
+        function renderMbtiHistory() {
+            const listEl = document.getElementById('mbti-history-list');
+            const emptyEl = document.getElementById('mbti-history-empty');
+            const history = JSON.parse(localStorage.getItem(MBTI_HISTORY_KEY) || '[]');
+
+            if (history.length === 0) {
+                listEl.innerHTML = '';
+                emptyEl.style.display = 'block';
+                return;
+            }
+            emptyEl.style.display = 'none';
+
+            listEl.innerHTML = history.map((r, i) => {
+                const desc = getTypeDescription(r.type);
+                return '<div class="personality-card" style="margin-bottom:12px;cursor:pointer;display:flex;align-items:center;gap:16px;padding:20px;" onclick="viewMbtiHistory(' + i + ')">' +
+                    '<div class="avatar-circle" style="width:60px;height:60px;min-width:60px;font-size:1.5em;background:' + desc.color + ';flex-shrink:0;">' +
+                        '<div class="cartoon-avatar avatar-' + r.type + '" style="transform:scale(0.5);">' +
+                            '<div class="avatar-head"><div class="avatar-eyes"><div class="eye"></div><div class="eye"></div></div><div class="avatar-mouth"></div></div>' +
+                            '<div class="avatar-feature"></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div style="flex:1;min-width:0;">' +
+                        '<div style="font-weight:700;font-size:1.05em;">' + r.type + ' · ' + r.typeName + '</div>' +
+                        '<div style="font-size:0.82rem;color:#888;">' + r.date + '</div>' +
+                    '</div>' +
+                    '<span style="font-size:0.82rem;color:#667eea;font-weight:600;white-space:nowrap;">' + r.type + ' ' + r.typeName + '</span>' +
+                    '<button onclick="event.stopPropagation();deleteMbtiHistory(' + i + ')" style="background:none;border:none;font-size:1.2rem;cursor:pointer;padding:4px 8px;border-radius:50%;" title="删除">✕</button>' +
+                '</div>';
+            }).join('');
+        }
+
+        function viewMbtiHistory(index) {
+            const history = JSON.parse(localStorage.getItem(MBTI_HISTORY_KEY) || '[]');
+            if (!history[index]) return;
+            const r = history[index];
+            const desc = getTypeDescription(r.type);
+
+            document.getElementById('test-content').style.display = 'block';
+            document.getElementById('intro-section').style.display = 'none';
+            document.getElementById('quiz-container').style.display = 'none';
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.style.background = 'linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85))';
+            document.body.style.background = desc.color;
+            document.getElementById('progress').style.width = '100%';
+            document.getElementById('progress').textContent = '历史记录';
+
+            const traitsHTML = desc.traits.map(function(t) { return '<span class="trait-tag">' + t + '</span>'; }).join('');
+            const pct = r.percentages;
+            var dims = [
+                {a:'E',b:'I',label:'外向(E) vs 内向(I)'},
+                {a:'S',b:'N',label:'感觉(S) vs 直觉(N)'},
+                {a:'T',b:'F',label:'思维(T) vs 情感(F)'},
+                {a:'J',b:'P',label:'判断(J) vs 知觉(P)'}
+            ];
+            var barsHTML = '';
+            dims.forEach(function(d) {
+                var va = pct[d.a] || 50;
+                var vb = pct[d.b] || 50;
+                barsHTML += '<div style="margin-bottom:16px;">' +
+                    '<div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.9rem;">' +
+                        '<span style="font-weight:' + (va>vb?'bold':'normal') + '">' + d.a + ' ' + va + '%</span>' +
+                        '<span style="font-weight:' + (vb>va?'bold':'normal') + '">' + vb + '% ' + d.b + '</span>' +
+                    '</div>' +
+                    '<div style="background:#e0e0e0;height:20px;border-radius:10px;overflow:hidden;">' +
+                        '<div style="background:' + desc.color + ';height:100%;width:' + va + '%;float:left;"></div>' +
+                    '</div></div>';
+            });
+
+            resultDiv.innerHTML =
+                '<div class="personality-avatar">' +
+                    '<div class="avatar-circle type-' + r.type + '" style="background:' + desc.color + '">' +
+                        '<div class="cartoon-avatar avatar-' + r.type + '">' +
+                            '<div class="avatar-head"><div class="avatar-eyes"><div class="eye"></div><div class="eye"></div></div><div class="avatar-mouth"></div></div>' +
+                            '<div class="avatar-feature"></div>' +
+                        '</div>' +
+                    '</div>' +
+                '</div>' +
+                '<h2 style="color:#2c3e50;">你的人格类型是：' + r.type + '</h2>' +
+                '<h3 style="background:' + desc.color + ';-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:15px 0;font-size:2em;">' + desc.name + '</h3>' +
+                '<p style="color:#555;max-width:600px;margin:0 auto;">' + desc.desc + '</p>' +
+                '<div class="trait-tags">' + traitsHTML + '</div>' +
+                '<div class="result-card"><h4 style="color:#2c3e50;margin-bottom:20px;">倾向分析：</h4>' + barsHTML + '</div>' +
+                '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:20px;">' +
+                    '<button class="tab-btn" onclick="showTab(\'history\');renderMbtiHistory();" style="background:#f0f0f0;color:#333;">← 返回历史</button>' +
+                    '<button class="tab-btn" style="background:' + desc.color + '" onclick="resetQuiz()">重新测试</button>' +
+                '</div>';
+
+            showTab('test');
+        }
+
+        function deleteMbtiHistory(index) {
+            if (!confirm('确定删除这条记录吗？')) return;
+            var history = JSON.parse(localStorage.getItem(MBTI_HISTORY_KEY) || '[]');
+            history.splice(index, 1);
+            localStorage.setItem(MBTI_HISTORY_KEY, JSON.stringify(history));
+            renderMbtiHistory();
+        }
+
+        function clearMbtiHistory() {
+            if (!confirm('确定要清空所有历史记录吗？此操作不可恢复。')) return;
+            localStorage.removeItem(MBTI_HISTORY_KEY);
+            renderMbtiHistory();
+        }
+
+        // 在 showResult 中自动保存
+        var origShowResult = showResult;
+        showResult = function() {
+            origShowResult();
+            var result = calculateType();
+            saveMbtiToHistory(result.type, result.percentages, getTypeDescription(result.type));
+        };
+
+        // ==================== MBTI 图鉴数据 ====================
+        var MBTI_ENCYCLOPEDIA = {
+            'INTJ': { vibe:'战略思想家，永远在下一盘大棋', detail:'INTJ是天生的战略家，善于从全局角度看问题。你对知识有永不满足的渴望，独立、理性、有决心。在人群中占比约2%，是最稀有的类型之一。你的座右铭是"要么不做，要做就做到最好"。', strengths:'战略思维 | 独立自主 | 高标准 | 长远规划', weaknesses:'过于完美主义 | 不擅社交寒暄 | 对他人要求过高', career:'科学家、工程师、战略顾问、律师、教授', fun:'你的大脑就像一直在运行多个虚拟机——表面上在吃饭，实际上在规划五年后的商业帝国。' },
+            'INTP': { vibe:'逻辑至上的知识探索者', detail:'INTP是安静的思想家，对理论和抽象概念充满热情。你喜欢理解事物背后的原理，常常沉浸在自己的思维世界中。你是天生的分析师，能从复杂信息中找到模式。', strengths:'分析力强 | 创新思维 | 客观理性 | 好奇心旺盛', weaknesses:'拖延症 | 社交回避 | 忽略实际细节 | 过于理论化', career:'程序员、科学家、哲学家、数学家、系统分析师', fun:'你的浏览器至少有50个标签页，因为你每看到一个感兴趣的东西就去研究——然后打开了更多标签页。' },
+            'ENTJ': { vibe:'天生的领导者，气场两米八', detail:'ENTJ是充满魅力和自信的领导者。你有战略眼光，善于组织和领导他人实现目标。你对效率有执念，讨厌拖泥带水。人群中占比约3%，但CEO中占比高达15%。', strengths:'领导力 | 果断 | 自信 | 战略性 | 高效', weaknesses:'过于强硬 | 缺乏耐心 | 忽视他人感受 | 工作狂倾向', career:'CEO、企业家、军事指挥官、法官、政治家', fun:'你解雇人的速度可能比相亲还快——不合适就换，别互相耽误时间。' },
+            'ENTP': { vibe:'舌战群儒的辩论高手', detail:'ENTP是聪明好奇的思想家，喜欢智力挑战。你机智灵活，善于从多个角度看问题。对你来说，没有什么比一场精彩的辩论更让人兴奋的了。', strengths:'机智 | 创新 | 善辩 | 适应力强 | 思维敏捷', weaknesses:'容易争论过度 | 缺乏执行力 | 对常规事务不耐 | 注意力分散', career:'创业者、律师、发明家、创意总监、产品经理', fun:'你能同时支持三个互相矛盾的观点——而且每个都说得头头是道。吵架从没输过。' },
+            'INFJ': { vibe:'神秘而深邃的理想主义者', detail:'INFJ是富有洞察力的理想主义者，对他人的情感有超乎寻常的感知力。你追求意义和目的，致力于让世界变得更好。在人群中占比不到1%，是最稀有的人格类型。', strengths:'洞察力 | 理想主义 | 同理心 | 有原则 | 创造力', weaknesses:'过度敏感 | 完美主义 | 容易倦怠 | 难以被理解', career:'心理咨询师、作家、教育者、艺术家、NGO工作者', fun:'你能在第一次见面就读懂一个人——有时候连对方自己都还没意识到的事，你已经看到了。' },
+            'INFP': { vibe:'诗意的灵魂，温柔的战士', detail:'INFP是诗意的梦想家，忠诚而富有创造力。你有强烈的个人价值观，追求真实和和谐。对你来说，意义比成功更重要，真实比完美更珍贵。', strengths:'理想主义 | 富有创意 | 同理心强 | 灵活 | 忠诚', weaknesses:'过于理想化 | 容易受伤 | 决策困难 | 逃避冲突', career:'作家、艺术家、心理咨询师、社工、设计师', fun:'你能为一朵云的形状感动一整天——不是因为矫情，是因为你真的有在认真感受这个世界。' },
+            'ENFJ': { vibe:'天生的导师和灵魂领袖', detail:'ENFJ是富有魅力的领导者，温暖而有同理心。你善于激励他人，致力于帮助他人发挥潜能。你能自然地感知团队中每个人的状态，是最会"带人"的类型。', strengths:'魅力 | 利他 | 鼓舞人心 | 可靠 | 沟通力强', weaknesses:'过于理想化 | 容易过度付出 | 难以接受批评 | 忽略自我需求', career:'教师、培训师、人力资源、政治家、公关', fun:'你安慰别人比AI还快——对方还没说完问题，你的解决方案和纸巾已经同时到位了。' },
+            'ENFP': { vibe:'行走的小太阳，创意永动机', detail:'ENFP是热情的创造者，充满想象力和感染力。你对新事物充满好奇，善于用你的热情点燃他人。你是天生的"可能性探测仪"——总能看到别人看不到的潜力。', strengths:'热情 | 创造力 | 社交能力 | 乐观 | 适应性强', weaknesses:'注意力分散 | 容易无聊 | 不善理财 | 过度理想化', career:'记者、演员、广告创意、创业者、公关', fun:'你可以在三分钟内和陌生人聊到对方的人生理想——而且真心觉得"哇原来你的人生这么有趣！"' },
+            'ISTJ': { vibe:'稳重如山，一诺千金', detail:'ISTJ是可靠的执行者，认真负责。你重视传统和忠诚，以高标准完成每一项任务。你是那种"说到就一定会做到"的人——让人无比安心。', strengths:'可靠 | 实际 | 有条理 | 负责 | 勤奋', weaknesses:'过于固执 | 抗拒变化 | 不擅长表达情感 | 对自己太苛刻', career:'会计师、审计师、军人、法官、公务员', fun:'你的日程表精确到分钟——如果一件事没在计划表上，那它就不存在。' },
+            'ISFJ': { vibe:'温柔守护，默默付出的隐形英雄', detail:'ISFJ是专注的保护者，善良细心。你关注他人的需求，默默地为他人提供支持和帮助。你是那种"所有人都没注意到的问题，你已经悄悄解决了"的人。', strengths:'关怀 | 细心 | 忠诚 | 务实 | 耐心', weaknesses:'过于谦逊 | 难以拒绝 | 压抑情绪 | 害怕变化', career:'护士、教师、社工、行政、图书管理员', fun:'你记得所有人的生日、喜好和忌口——但自己的生日经常被自己遗忘。' },
+            'ESTJ': { vibe:'高效运转的管理者', detail:'ESTJ是高效的组织者，实际而果断。你善于管理和组织，确保事情高效完成。你的世界里没有"差不多"——只有"做完"和"没做完"。', strengths:'组织力 | 果断 | 实际 | 负责 | 领导力', weaknesses:'过于强势 | 缺乏弹性 | 忽略情感因素 | 急躁', career:'经理、军官、校长、工程师、项目经理', fun:'你的Excel比大多数人的日记还要工整——每个单元格都完美对齐。' },
+            'ESFJ': { vibe:'温暖的社交达人', detail:'ESFJ是关怀的支持者，热心合作。你重视和谐与合作，努力创造积极的环境。你是朋友圈里公认的"人间小棉袄"。', strengths:'合作 | 忠诚 | 热心 | 社交 | 有责任感', weaknesses:'过度在意他人看法 | 害怕冲突 | 容易内耗 | 不善于独处', career:'护士、教师、销售、客服、婚庆策划', fun:'你组织聚会的能力堪称专业级别——从场地到菜单到每个人的座位安排都考虑到了。' },
+            'ISTP': { vibe:'酷酷的独行侠，动手能力MAX', detail:'ISTP是实际的实验者，冷静而灵活。你善于动手解决问题，享受掌握各种技能。面对危机时你最淡定——因为你知道怎么修好任何东西。', strengths:'实践力 | 灵活 | 理性 | 独立 | 冷静', weaknesses:'过于保守秘密 | 不善表达 | 易无聊 | 回避长期承诺', career:'工程师、飞行员、技术专家、法医、消防员', fun:'你拆东西的速度比装回去快——但神奇的是，每次装回去都还能用。' },
+            'ISFP': { vibe:'安静的美学大师', detail:'ISFP是灵活的艺术家，安静友好。你有独特的审美和对美的敏感。你不喜欢被框住，享受用自己的节奏探索世界。', strengths:'艺术性 | 敏感 | 灵活 | 和平 | 审美力', weaknesses:'过于敏感 | 回避冲突 | 缺乏长期规划 | 容易逃避', career:'设计师、摄影师、艺术家、花艺师、化妆师', fun:'你能在一家店逛三个小时然后什么都不买——但每一件你都认真地"欣赏"过了。' },
+            'ESTP': { vibe:'活在当下的冒险家', detail:'ESTP是精力充沛的实干家，灵活务实。你专注于即时结果，享受充满活力的生活。你最讨厌开会，最喜欢"直接开干"。', strengths:'行动力 | 务实 | 大胆 | 应变力 | 观察力', weaknesses:'冲动 | 缺乏耐心 | 冒险过度 | 不擅长期规划', career:'销售、运动员、急救人员、企业家、特技演员', fun:'你的"等等"的意思是"等我五秒，我穿上鞋就走"——说走就走的旅行是你的日常操作。' },
+            'ESFP': { vibe:'派对上的灵魂人物', detail:'ESFP是自发的表演者，外向友好。你喜欢成为关注的焦点，能给每个场合带来欢乐。对你来说，人生就是一场盛大的表演——而且你永远是C位。', strengths:'热情 | 自发 | 友好 | 适应性强 | 幽默感', weaknesses:'注意力短暂 | 回避深度话题 | 冲动消费 | 不善规划', career:'演员、歌手、导游、销售、活动策划', fun:'你是那种"逛超市都能交到新朋友"的神奇存在——收银员都认识你。' }
+        };
+
+        var encyFilterMbti = 'all';
+        var mbtiGroups = {
+            'analyst': ['INTJ','INTP','ENTJ','ENTP'],
+            'diplomat': ['INFJ','INFP','ENFJ','ENFP'],
+            'sentinel': ['ISTJ','ISFJ','ESTJ','ESFJ'],
+            'explorer': ['ISTP','ISFP','ESTP','ESFP']
+        };
+
+        function renderMbtiEncyclopedia() {
+            var grid = document.getElementById('ency-grid');
+            var types = Object.keys(MBTI_ENCYCLOPEDIA);
+            var filtered = types;
+            if (encyFilterMbti !== 'all') {
+                filtered = types.filter(function(t) { return mbtiGroups[encyFilterMbti] && mbtiGroups[encyFilterMbti].indexOf(t) >= 0; });
+            }
+
+            var filters = [
+                {key:'all',label:'全部'},
+                {key:'analyst',label:'🧠 分析家'},
+                {key:'diplomat',label:'💚 外交家'},
+                {key:'sentinel',label:'🛡️ 守护者'},
+                {key:'explorer',label:'🎨 探索者'}
+            ];
+            document.getElementById('ency-filter-bar').innerHTML = filters.map(function(g) {
+                return '<button class="tab-btn' + (encyFilterMbti === g.key ? ' active' : '') + '" style="font-size:0.85rem;padding:8px 16px;" onclick="encyFilterMbti=\'' + g.key + '\';renderMbtiEncyclopedia();">' + g.label + '</button>';
+            }).join('');
+
+            grid.innerHTML = filtered.map(function(t) {
+                var e = MBTI_ENCYCLOPEDIA[t];
+                var desc = getTypeDescription(t);
+                return '<div class="personality-card mbti-flip-card" style="position:relative;overflow:hidden;cursor:pointer;min-height:280px;" onclick="this.classList.toggle(\'flipped-mbti\')">' +
+                    '<div class="mbti-card-front" style="text-align:center;padding:20px;">' +
+                        '<div class="avatar-circle" style="width:70px;height:70px;margin:0 auto 12px;font-size:1.5em;background:' + desc.color + ';">' +
+                            '<div class="cartoon-avatar avatar-' + t + '" style="transform:scale(0.6);">' +
+                                '<div class="avatar-head"><div class="avatar-eyes"><div class="eye"></div><div class="eye"></div></div><div class="avatar-mouth"></div></div>' +
+                                '<div class="avatar-feature"></div>' +
+                            '</div>' +
+                        '</div>' +
+                        '<h3>' + desc.name + '</h3>' +
+                        '<div class="type-code" style="background:' + desc.color + ';-webkit-background-clip:text;-webkit-text-fill-color:transparent;">' + t + '</div>' +
+                        '<p style="font-size:0.85rem;color:#666;margin-top:6px;">' + e.vibe + '</p>' +
+                        '<p style="font-size:0.7rem;color:#999;margin-top:8px;">👆 点击查看详情</p>' +
+                    '</div>' +
+                    '<div class="mbti-card-back" style="display:none;padding:16px;text-align:left;">' +
+                        '<h4 style="color:#2c3e50;margin-bottom:8px;border-bottom:2px solid #eee;padding-bottom:8px;">' + t + ' · ' + desc.name + '</h4>' +
+                        '<p style="font-size:0.85rem;color:#555;line-height:1.6;margin-bottom:8px;">' + e.detail + '</p>' +
+                        '<div style="font-size:0.8rem;margin-bottom:4px;"><strong>✨ 优势：</strong>' + e.strengths + '</div>' +
+                        '<div style="font-size:0.8rem;margin-bottom:4px;"><strong>⚠ 短板：</strong>' + e.weaknesses + '</div>' +
+                        '<div style="font-size:0.8rem;margin-bottom:4px;"><strong>💼 适合职业：</strong>' + e.career + '</div>' +
+                        '<div style="font-size:0.75rem;color:#999;font-style:italic;margin-top:8px;border-top:1px solid #eee;padding-top:8px;">😂 ' + e.fun + '</div>' +
+                    '</div>' +
+                '</div>';
+            }).join('');
+        }
+
+        // 注入翻转样式
+        var flipStyle = document.createElement('style');
+        flipStyle.textContent = '.mbti-flip-card.flipped-mbti .mbti-card-front{display:none!important}.mbti-flip-card.flipped-mbti .mbti-card-back{display:block!important}.mbti-flip-card{transition:all 0.3s}.mbti-flip-card:hover{transform:translateY(-6px);box-shadow:0 12px 30px rgba(0,0,0,0.15)}';
+        document.head.appendChild(flipStyle);
+
+        function renderMbtiMatchSelects() {
+            var types = Object.keys(MBTI_ENCYCLOPEDIA);
+            types.sort();
+            var options = types.map(function(t) { return '<option value="' + t + '">' + t + ' ' + getTypeDescription(t).name + '</option>'; }).join('');
+            var selA = document.getElementById('mbti-match-a');
+            var selB = document.getElementById('mbti-match-b');
+            if (selA) selA.innerHTML = options;
+            if (selB) { selB.innerHTML = options; selB.selectedIndex = 1; }
+            updateMbtiMatch();
+        }
+
+        function updateMbtiMatch() {
+            var a = document.getElementById('mbti-match-a') ? document.getElementById('mbti-match-a').value : '';
+            var b = document.getElementById('mbti-match-b') ? document.getElementById('mbti-match-b').value : '';
+            var el = document.getElementById('mbti-match-result');
+            if (!a || !b) { el.innerHTML = '<span style="color:#999;">请选择两种人格</span>'; return; }
+            if (a === b) { el.innerHTML = '<span style="color:#999;">😅 同一个人跟自己最合拍？选两个不同的试试吧～</span>'; return; }
+
+            var functions = {
+                'INTJ':['Ni','Te','Fi','Se'], 'INTP':['Ti','Ne','Si','Fe'],
+                'ENTJ':['Te','Ni','Se','Fi'], 'ENTP':['Ne','Ti','Fe','Si'],
+                'INFJ':['Ni','Fe','Ti','Se'], 'INFP':['Fi','Ne','Si','Te'],
+                'ENFJ':['Fe','Ni','Se','Ti'], 'ENFP':['Ne','Fi','Te','Si'],
+                'ISTJ':['Si','Te','Fi','Ne'], 'ISFJ':['Si','Fe','Ti','Ne'],
+                'ESTJ':['Te','Si','Ne','Fi'], 'ESFJ':['Fe','Si','Ne','Ti'],
+                'ISTP':['Ti','Se','Ni','Fe'], 'ISFP':['Fi','Se','Ni','Te'],
+                'ESTP':['Se','Ti','Fe','Ni'], 'ESFP':['Se','Fi','Te','Ni']
+            };
+
+            var fa = functions[a], fb = functions[b];
+            var score = 0;
+            for (var i = 0; i < 4; i++) {
+                for (var j = 0; j < 4; j++) {
+                    if (fa[i] === fb[j]) score += (4 - Math.abs(i - j));
+                }
+            }
+            var pct = Math.min(98, Math.round(40 + score * 4));
+            var emoji, label, color;
+            if (pct >= 85) { emoji = '💎'; label = '灵魂共鸣'; color = '#27ae60'; }
+            else if (pct >= 70) { emoji = '🌟'; label = '很合拍'; color = '#f39c12'; }
+            else if (pct >= 55) { emoji = '👍'; label = '还不错'; color = '#e67e22'; }
+            else { emoji = '🤝'; label = '需要磨合'; color = '#e74c3c'; }
+
+            el.innerHTML = '<div style="font-size:2rem;font-weight:900;color:' + color + ';">' + pct + '<span style="font-size:1rem;">分</span></div>' +
+                '<div>' + emoji + ' ' + label + '</div>' +
+                '<p style="font-size:0.82rem;color:#999;margin-top:4px;">基于荣格认知功能理论计算 · 仅供参考娱乐</p>';
+        }
+
+        // 重写 showTab 以支持图鉴和历史
+        var origShowTab = showTab;
+        showTab = function(tabName) {
+            var tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(function(t) { t.classList.remove('active'); });
+            document.getElementById(tabName).classList.add('active');
+
+            var buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(function(b) { b.classList.remove('active'); });
+            if (event && event.target) event.target.classList.add('active');
+
+            if (tabName !== 'test' || document.getElementById('result').style.display === 'none') {
+                document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+            }
+
+            if (tabName === 'test' && currentQuestion >= shuffledQuestions.length && shuffledQuestions.length > 0) {
+                resetQuiz();
+            }
+
+            if (tabName === 'encyclopedia') {
+                renderMbtiEncyclopedia();
+                renderMbtiMatchSelects();
+            }
+
+            if (tabName === 'history') {
+                renderMbtiHistory();
+            }
+        };
     </script>
 </body>
 </html>

@@ -497,6 +497,7 @@ function showResults() {
   document.getElementById('results').style.display = 'block';
 
   const scores = calcScores();
+  saveToHistory(scores);
   const ranked = matchFigures(scores);
   const top = ranked[0];
 
@@ -644,6 +645,170 @@ function renderOtherMatches(figures) {
     </div>
   `).join('');
   document.getElementById('otherMatches').innerHTML = html;
+}
+
+// ===== 历史记录 =====
+const HISTORY_KEY = 'history_figure_test_history';
+
+function saveToHistory(scores) {
+    try {
+        const ranked = matchFigures(scores);
+        const top = ranked[0];
+        const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        history.unshift({
+            id: Date.now(),
+            date: new Date().toLocaleString('zh-CN', { year:'numeric', month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit' }),
+            scores: scores,
+            figureId: top.id,
+            figureName: top.name,
+            similarity: top.similarity,
+            quote: top.quote
+        });
+        if (history.length > 30) history.length = 30;
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    } catch(e) {}
+}
+
+function showHistory() {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('test').style.display = 'none';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('historyPage').style.display = 'block';
+    document.getElementById('encyclopediaPage').style.display = 'none';
+    renderHistory();
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderHistory() {
+    const listEl = document.getElementById('historyList');
+    const emptyEl = document.getElementById('historyEmpty');
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+    if (history.length === 0) {
+        listEl.innerHTML = '';
+        emptyEl.style.display = 'block';
+        return;
+    }
+    emptyEl.style.display = 'none';
+
+    listEl.innerHTML = history.map((r,i) => {
+        const f = figures.find(x => x.id === r.figureId);
+        const avatar = f ? f.avatar : '';
+        return '<div class="other-figure" style="cursor:pointer;margin-bottom:8px;position:relative;" onclick="viewHistory(' + i + ')">' +
+            '<div class="mini-avatar">' + avatar + '</div>' +
+            '<div class="mini-info" style="flex:1;">' +
+                '<h4>' + r.figureName + '</h4>' +
+                '<div class="mini-title">' + r.date + '</div>' +
+            '</div>' +
+            '<div class="mini-pct">' + r.similarity + '%</div>' +
+            '<button onclick="event.stopPropagation();deleteHistory(' + i + ')" style="position:absolute;top:6px;right:8px;background:none;border:none;font-size:1rem;cursor:pointer;color:#999;padding:2px 6px;">✕</button>' +
+        '</div>';
+    }).join('');
+}
+
+function viewHistory(index) {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    if (!history[index]) return;
+    const r = history[index];
+
+    document.getElementById('test').style.display = 'none';
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('historyPage').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+
+    const ranked = matchFigures(r.scores);
+    const top = ranked[0];
+
+    document.getElementById('topFigure').innerHTML =
+        '<div class="figure-avatar">' + top.avatar + '</div>' +
+        '<div class="figure-info">' +
+            '<h3>' + top.name + '</h3>' +
+            '<div class="figure-title">' + top.title + '</div>' +
+            '<div class="match-pct">匹配度 ' + top.similarity + '%</div>' +
+            '<p class="figure-desc">' + top.desc + '</p>' +
+            '<p class="figure-quote">"' + top.quote + '"</p>' +
+            '<p style="margin-top:0.5rem;font-size:0.85rem;color:var(--text-secondary);">🎯 ' + top.traits + '</p>' +
+        '</div>';
+
+    renderRadarChart(r.scores);
+    renderBarChart(r.scores);
+    renderDimAnalysis(r.scores);
+    renderOtherMatches(ranked.slice(1,4));
+
+    document.querySelector('.share-section').innerHTML = '<button class="btn btn-primary btn-sm" onclick="showHistory()" style="margin:0 6px;">← 返回历史</button>' +
+        '<button class="btn btn-primary" onclick="shareResult()" style="margin:0 6px;">📋 复制结果分享</button>';
+
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function deleteHistory(index) {
+    if (!confirm('确定删除这条记录吗？')) return;
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    history.splice(index, 1);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    renderHistory();
+}
+
+function clearHistory() {
+    if (!confirm('确定要清空所有历史记录吗？此操作不可恢复。')) return;
+    localStorage.removeItem(HISTORY_KEY);
+    renderHistory();
+}
+
+function backToLanding() {
+    document.getElementById('test').style.display = 'none';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('historyPage').style.display = 'none';
+    document.getElementById('encyclopediaPage').style.display = 'none';
+    document.getElementById('landing').style.display = 'flex';
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ===== 人物图鉴 =====
+function showEncyclopedia() {
+    document.getElementById('landing').style.display = 'none';
+    document.getElementById('test').style.display = 'none';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('historyPage').style.display = 'none';
+    document.getElementById('encyclopediaPage').style.display = 'block';
+    renderFigureGallery();
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderFigureGallery() {
+    const gallery = document.getElementById('figureGallery');
+    gallery.innerHTML = figures.map(f =>
+        '<div class="other-figure" style="cursor:pointer;flex-direction:column;align-items:center;text-align:center;padding:20px 16px;transition:all 0.3s;border:2px solid transparent;" onclick="showFigureDetail(\'' + f.id + '\')" onmouseenter="this.style.borderColor=\'var(--gold)\';this.style.transform=\'translateY(-4px)\'" onmouseleave="this.style.borderColor=\'transparent\';this.style.transform=\'none\'">' +
+            '<div class="mini-avatar" style="width:80px;height:80px;margin-bottom:8px;">' + f.avatar + '</div>' +
+            '<h4>' + f.name + '</h4>' +
+            '<div class="mini-title">' + f.title + '</div>' +
+            '<p style="font-size:0.8rem;color:var(--text-secondary);margin-top:6px;line-height:1.5;">' + f.desc.substring(0,60) + '...</p>' +
+            '<p style="font-size:0.75rem;color:var(--primary);margin-top:4px;font-style:italic;">"' + f.quote.substring(0,25) + '..."</p>' +
+        '</div>'
+    ).join('');
+}
+
+function showFigureDetail(figId) {
+    const f = figures.find(x => x.id === figId);
+    if (!f) return;
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(4px);';
+    overlay.innerHTML =
+        '<div style="background:#fff;border-radius:20px;padding:32px 28px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto;position:relative;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,0.2);">' +
+            '<button onclick="this.closest(\'div\').parentElement.remove()" style="position:absolute;top:12px;right:16px;width:32px;height:32px;border-radius:50%;border:none;background:#f0f0f0;font-size:1.2rem;cursor:pointer;">✕</button>' +
+            '<div style="width:100px;height:100px;margin:0 auto 16px;">' + f.avatar + '</div>' +
+            '<h2 style="color:var(--primary);">' + f.name + '</h2>' +
+            '<p style="color:var(--text-secondary);margin:4px 0 12px;">' + f.title + '</p>' +
+            '<p style="font-size:0.95rem;color:#555;line-height:1.8;text-align:left;">' + f.desc + '</p>' +
+            '<div style="background:#f5f0e8;border-radius:12px;padding:12px;margin:12px 0;font-style:italic;color:var(--primary);">"' + f.quote + '"</div>' +
+            '<p style="font-size:0.85rem;color:var(--text-secondary);">🎯 ' + f.traits + '</p>' +
+            '<div style="display:flex;gap:8px;justify-content:center;margin-top:12px;font-size:0.8rem;color:#888;">' +
+                '<span>O:' + f.profile.O + '</span><span>C:' + f.profile.C + '</span><span>E:' + f.profile.E + '</span><span>A:' + f.profile.A + '</span><span>N:' + f.profile.N + '</span>' +
+            '</div>' +
+        '</div>';
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.remove(); });
+    document.body.appendChild(overlay);
 }
 
 // ===== 分享 =====
