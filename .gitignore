@@ -27,6 +27,8 @@ desktop.ini
 *.log
 /test/
 /tests-output/
+*.png
+.playwright-mcp/
 
 # 构建输出
 dist/

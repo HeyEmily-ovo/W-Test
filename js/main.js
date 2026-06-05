@@ -5,6 +5,52 @@
 (function () {
   'use strict';
 
+  // ==================== 主题管理 ====================
+  const THEME_KEY = 'wt-test-theme';
+  const html = document.documentElement;
+
+  function getSavedTheme() {
+    try {
+      return localStorage.getItem(THEME_KEY);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function saveTheme(theme) {
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch (e) {
+      // localStorage 不可用时静默失败
+    }
+  }
+
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      html.setAttribute('data-theme', 'dark');
+    } else {
+      html.removeAttribute('data-theme');
+    }
+    saveTheme(theme);
+  }
+
+  function setupThemeToggle() {
+    const btn = document.getElementById('themeToggle');
+    if (!btn) return;
+
+    // 读取保存的主题，默认浅色
+    const saved = getSavedTheme();
+    if (saved) {
+      applyTheme(saved);
+    }
+
+    btn.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      applyTheme(next);
+    });
+  }
+
   // ==================== 星空背景生成 ====================
   function createStars() {
     const container = document.getElementById('starsContainer');
@@ -159,6 +205,7 @@
 
   // ==================== 初始化 ====================
   function init() {
+    setupThemeToggle();
     createStars();
     if (window.TESTS) {
       renderCards(window.TESTS);

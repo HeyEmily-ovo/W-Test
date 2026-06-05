@@ -1,26 +1,65 @@
 /* ============================================================
    W-Test 测试集合网站 - 主样式表
    设计风格：年轻化 · 渐变色彩 · 玻璃态 · 微交互
+   支持浅色/深色主题切换
    ============================================================ */
 
-/* ---------- CSS 变量 ---------- */
+/* ---------- CSS 变量：浅色主题（默认） ---------- */
 :root {
   --primary: #7C5CFC;
   --primary-dark: #5B3FE0;
-  --bg-dark: #0a0a1a;
+  --bg-primary: #f8f6ff;
+  --bg-secondary: #f0edff;
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(0, 0, 0, 0.1);
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --text-primary: #1a1a2e;
+  --text-secondary: rgba(26, 26, 46, 0.65);
+  --text-muted: rgba(26, 26, 46, 0.45);
+  --navbar-bg: rgba(248, 246, 255, 0.85);
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --shadow-btn: 0 4px 15px rgba(124, 92, 252, 0.3);
+  --star-color: rgba(26, 26, 46, 0.06);
+  --tag-bg: rgba(0, 0, 0, 0.04);
+  --tag-border: rgba(0, 0, 0, 0.06);
+  --card-hover-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+  --aurora-opacity: 0.15;
+  --scrollbar-thumb: rgba(0, 0, 0, 0.15);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
+  --btn-bg: #fff;
+  --btn-text: var(--primary);
+  --empty-icon-bg: rgba(0, 0, 0, 0.04);
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- CSS 变量：深色主题 ---------- */
+[data-theme="dark"] {
+  --bg-primary: #0a0a1a;
+  --bg-secondary: #0f0f24;
   --bg-card: rgba(255, 255, 255, 0.06);
   --glass-border: rgba(255, 255, 255, 0.12);
   --glass-bg: rgba(255, 255, 255, 0.08);
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.7);
   --text-muted: rgba(255, 255, 255, 0.45);
-  --radius-lg: 24px;
-  --radius-md: 16px;
-  --radius-sm: 10px;
+  --navbar-bg: rgba(10, 10, 26, 0.75);
   --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.3);
   --shadow-btn: 0 4px 15px rgba(124, 92, 252, 0.4);
-  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  --font-mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --star-color: #ffffff;
+  --tag-bg: rgba(255, 255, 255, 0.06);
+  --tag-border: rgba(255, 255, 255, 0.08);
+  --card-hover-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  --aurora-opacity: 0.25;
+  --scrollbar-thumb: rgba(255, 255, 255, 0.15);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+  --btn-bg: rgba(255, 255, 255, 0.1);
+  --btn-text: #fff;
+  --empty-icon-bg: rgba(255, 255, 255, 0.06);
+}
+
+/* 主题切换过渡 */
+html, *, *::before, *::after {
+  transition: background-color 0.35s ease, border-color 0.35s ease, color 0.35s ease, box-shadow 0.35s ease;
 }
 
 /* ---------- 全局重置 ---------- */
@@ -41,7 +80,7 @@ html {
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
     'Microsoft YaHei', 'Helvetica Neue', sans-serif;
-  background: var(--bg-dark);
+  background: var(--bg-primary);
   color: var(--text-primary);
   min-height: 100vh;
   overflow-x: hidden;
@@ -59,7 +98,7 @@ body {
 
 .star {
   position: absolute;
-  background: white;
+  background: var(--star-color);
   border-radius: 50%;
   animation: twinkle var(--duration) ease-in-out infinite;
   animation-delay: var(--delay);
@@ -85,7 +124,7 @@ body {
   position: absolute;
   border-radius: 50%;
   filter: blur(120px);
-  opacity: 0.25;
+  opacity: var(--aurora-opacity);
   animation: auroraFloat 20s ease-in-out infinite;
 }
 
@@ -130,7 +169,7 @@ body {
   padding: 16px 0;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  background: rgba(10, 10, 26, 0.75);
+  background: var(--navbar-bg);
   border-bottom: 1px solid var(--glass-border);
 }
 
@@ -167,7 +206,7 @@ body {
 
 .nav-links {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   align-items: center;
   list-style: none;
 }
@@ -192,6 +231,49 @@ body {
   font-size: 0.82rem;
   font-weight: 600;
 }
+
+/* ---------- 主题切换按钮 ---------- */
+.theme-toggle {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all var(--transition);
+  color: var(--text-primary);
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle:hover {
+  border-color: var(--primary);
+  background: rgba(124, 92, 252, 0.1);
+  transform: scale(1.05);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+}
+
+.theme-toggle .icon-sun,
+.theme-toggle .icon-moon {
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+}
+
+/* 浅色模式：显示月亮（可切换到深色） */
+:root .theme-toggle .icon-moon { opacity: 1; transform: rotate(0deg); }
+:root .theme-toggle .icon-sun { opacity: 0; transform: rotate(90deg) scale(0.5); }
+
+/* 深色模式：显示太阳（可切换到浅色） */
+[data-theme="dark"] .theme-toggle .icon-moon { opacity: 0; transform: rotate(-90deg) scale(0.5); }
+[data-theme="dark"] .theme-toggle .icon-sun { opacity: 1; transform: rotate(0deg); }
 
 /* ---------- Hero 区域 ---------- */
 .hero {
@@ -305,9 +387,9 @@ body {
 }
 
 .filter-btn:hover {
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: var(--primary);
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(124, 92, 252, 0.08);
 }
 
 .filter-btn.active {
@@ -333,7 +415,7 @@ body {
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
-  border-radius: var(--radius-lg);
+  border-radius: 24px;
   padding: 32px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -341,6 +423,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  box-shadow: var(--shadow-card);
 }
 
 .test-card::before {
@@ -350,7 +433,7 @@ body {
   opacity: 0;
   transition: opacity 0.4s ease;
   z-index: 0;
-  border-radius: var(--radius-lg);
+  border-radius: 24px;
 }
 
 .test-card:hover::before {
@@ -360,9 +443,9 @@ body {
 
 .test-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(124, 92, 252, 0.5);
   box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.4),
+    var(--card-hover-shadow),
     0 0 0 1px var(--hover-color, #7C5CFC) inset;
 }
 
@@ -448,9 +531,9 @@ body {
   border-radius: 100px;
   font-size: 0.78rem;
   font-weight: 500;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--tag-bg);
   color: var(--text-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--tag-border);
 }
 
 .card-action {
@@ -519,6 +602,7 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
+  color: var(--text-primary);
 }
 
 .section-subtitle {
@@ -531,7 +615,7 @@ body {
   background: var(--bg-card);
   backdrop-filter: blur(20px);
   border: 2px dashed var(--glass-border);
-  border-radius: var(--radius-lg);
+  border-radius: 24px;
   padding: 48px 32px;
   text-align: center;
   cursor: pointer;
@@ -540,6 +624,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  box-shadow: var(--shadow-card);
 }
 
 .add-test-card:hover {
@@ -551,7 +636,7 @@ body {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--empty-icon-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -611,11 +696,8 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
 }
 
 /* ---------- 响应式 ---------- */
