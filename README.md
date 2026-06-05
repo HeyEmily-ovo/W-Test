@@ -88,6 +88,7 @@ npx serve .
 ```
 W-Test/
 ├── index.html                  # 主入口页面
+├── favicon.svg                 # 网站图标（大脑图案）
 ├── css/
 │   └── style.css               # 主页样式
 ├── js/
