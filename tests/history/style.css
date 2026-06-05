@@ -238,6 +238,7 @@ body {
 }
 @media (max-width: 420px) {
   #radarChart { height: 340px; }
+}
 
 /* ===== Q-TABS ===== */
 .q-tabs-wrap { margin-bottom: 1rem; }
