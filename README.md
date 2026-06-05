@@ -101,6 +101,7 @@ W-Test/
 │   ├── maturity/               # 心理成熟度测试
 │   └── animal/                 # 动物人格测试
 ├── README.md
+├── 开发规范.md                   # 新增测试开发规范（必读）
 └── .gitignore
 ```
 
