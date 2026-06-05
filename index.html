@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>W-Test · 探索你的内心世界</title>
+  <meta name="description" content="W-Test 是一个集成了 MBTI、历史人物、恋爱类型、心理成熟度、动物人格等多种心理学测试的集合平台，帮助你全方位探索自我。">
+  <meta name="keywords" content="心理测试,MBTI,人格测试,恋爱测试,心理成熟度,动物人格,W-Test">
+  <meta property="og:title" content="W-Test · 探索你的内心世界">
+  <meta property="og:description" content="集成多种心理学测试的集合平台，帮助你全方位探索自我。">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- 星空背景 -->
+  <div class="stars-container" id="starsContainer"></div>
+
+  <!-- 渐变光晕 -->
+  <div class="bg-aurora"></div>
+
+  <!-- 导航栏 -->
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="/" class="nav-logo" aria-label="W-Test 首页">
+        <span class="logo-icon">⚡</span>
+        <span>W-Test</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#tests">全部测试</a></li>
+        <li><a href="https://github.com/HeyEmily-ovo/W-Test" target="_blank" rel="noopener">GitHub</a></li>
+        <li><span class="nav-badge">v1.0</span></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- 主容器 -->
+  <div class="main-container">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span class="dot"></span>
+        5 个精选测试 · 持续更新中
+      </div>
+      <h1 class="hero-title">
+        探索你的<br><span class="gradient-text">内心世界</span>
+      </h1>
+      <p class="hero-desc">
+        从 MBTI 人格到恋爱类型，从历史人物到心理成熟度——W-Test
+        汇集了多种有趣的心理学测试，帮你全方位了解自己。
+        选一个感兴趣的，开始你的自我探索之旅吧 ✨
+      </p>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-value" id="testCount">5</div>
+          <div class="stat-label">精选测试</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">250+</div>
+          <div class="stat-label">测试题目</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value">40+</div>
+          <div class="stat-label">结果类型</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 筛选标签 -->
+    <section id="tests">
+      <div class="filter-bar" id="filterBar"></div>
+    </section>
+
+    <!-- 测试卡片网格 -->
+    <section class="test-grid" id="testGrid"></section>
+
+    <!-- 即将推出 -->
+    <section class="coming-soon-section">
+      <h3 class="section-title">🚀 更多测试即将上线</h3>
+      <p class="section-subtitle">有好的测试创意？欢迎在 GitHub 上提 Issue 或 PR</p>
+      <div class="test-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+        <div class="add-test-card" onclick="window.open('https://github.com/HeyEmily-ovo/W-Test/issues/new', '_blank')" role="button" tabindex="0">
+          <div class="add-test-icon">💡</div>
+          <div class="add-test-title">推荐新测试</div>
+          <div class="add-test-desc">有想做的测试？告诉我们你的想法</div>
+        </div>
+        <div class="add-test-card" onclick="window.open('https://github.com/HeyEmily-ovo/W-Test', '_blank')" role="button" tabindex="0">
+          <div class="add-test-icon">➕</div>
+          <div class="add-test-title">提交新测试</div>
+          <div class="add-test-desc">开发者？直接提交 PR 添加你的测试</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-text">
+        Made with ❤️ by <a href="https://github.com/HeyEmily-ovo" target="_blank" rel="noopener">HeyEmily</a>
+        · <a href="https://github.com/HeyEmily-ovo/W-Test" target="_blank" rel="noopener">GitHub</a>
+        · © 2025 W-Test
+      </p>
+    </div>
+  </footer>
+
+  <!-- 脚本 -->
+  <script src="js/config.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

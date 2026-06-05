@@ -1,0 +1,39 @@
+# W-Test 项目忽略文件
+
+# 需求和设计文档（本地参考用）
+requires.md
+CLAUDE.md
+
+# 依赖
+node_modules/
+package-lock.json
+yarn.lock
+
+# 操作系统
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 中间测试文件
+*.tmp
+*.temp
+*.log
+/test/
+/tests-output/
+
+# 构建输出
+dist/
+build/
+.cache/
+
+# 环境变量
+.env
+.env.local
+.env.*.local

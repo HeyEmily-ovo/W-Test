@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>恋爱类型测试 | 发现你的恋爱人格</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+</head>
+<body class="wt-has-nav">
+    <nav class="wt-nav">
+        <a href="../../index.html">← 返回测试集合</a>
+        <span style="color:rgba(255,255,255,0.2);">|</span>
+        <span class="wt-nav-logo">W-Test</span>
+    </nav>
+    <!-- ========== 首页 ========== -->
+    <section id="landing-section">
+        <div class="landing-container">
+            <div class="logo-area">
+                <div class="logo-icon">💘</div>
+                <h1 class="main-title">恋爱类型测试</h1>
+                <p class="sub-title">30道题，发现你在爱情里的真实模样</p>
+            </div>
+
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <div class="feature-icon">🔬</div>
+                    <h3>基于依恋理论</h3>
+                    <p>结合ECR量表与心理学研究，科学分析你的恋爱模式</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>8种恋爱类型</h3>
+                    <p>恋爱脑、回避型、占有欲型……找到属于你的标签</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>多维深度分析</h3>
+                    <p>6维度雷达图 + 详细恋爱画像，全面了解自己</p>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startTest()">
+                <span>开始测试</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M7 4L14 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+
+            <button class="history-entry-btn" onclick="showHistory()">📋 历史记录</button>
+            <button class="encyclopedia-entry-btn" onclick="showEncyclopedia()">📖 恋爱图鉴</button>
+
+        </div>
+    </section>
+
+    <!-- ========== 恋爱类型图鉴页 ========== -->
+    <section id="encyclopedia-section" style="display:none;">
+        <div class="encyclopedia-container">
+            <div class="encyclopedia-header">
+                <button class="back-btn" onclick="backFromEncyclopedia()">← 返回首页</button>
+                <h2 class="encyclopedia-title">📖 恋爱类型图鉴</h2>
+                <p class="encyclopedia-subtitle">8种恋爱人格完全档案 + 配对兼容度全解析</p>
+            </div>
+
+            <!-- 类型卡片 -->
+            <div class="encyclopedia-section-title">🎴 类型图鉴 <span class="encyclopedia-hint">（点击卡片翻转查看详情）</span></div>
+            <div class="type-cards-grid" id="type-cards-grid"></div>
+
+            <!-- 配对矩阵 -->
+            <div class="encyclopedia-section-title">💞 配对兼容度矩阵 <span class="encyclopedia-hint">（点击任意类型高亮其配对 / 点击格子查看详情）</span></div>
+            <div id="match-matrix"></div>
+        </div>
+    </section>
+
+    <!-- ========== 历史记录页 ========== -->
+    <section id="history-section" style="display:none;">
+        <div class="history-container">
+            <div class="history-header">
+                <button class="back-btn" onclick="backToLanding()">← 返回首页</button>
+                <h2 class="history-title">📋 历史记录</h2>
+                <button class="clear-all-btn" id="history-clear-all" onclick="clearAllHistory()">🗑 清空全部</button>
+            </div>
+            <div id="history-list"></div>
+            <div id="history-empty" style="display:none;">
+                <div class="history-empty-icon">📭</div>
+                <p class="history-empty-text">还没有测试记录</p>
+                <button class="start-btn" onclick="startTest()" style="font-size:16px; padding:14px 40px;">开始第一次测试</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========== 答题页 ========== -->
+    <section id="test-section" style="display:none;">
+        <div class="test-container">
+            <!-- 进度区 -->
+            <div class="progress-area">
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" id="progress-fill"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="progress-current">1</span>/<span id="progress-total">30</span>
+                </div>
+            </div>
+
+            <!-- 题目区 -->
+            <div class="question-card" id="question-card">
+                <div class="question-badge" id="question-badge"></div>
+                <div class="question-num" id="question-num"></div>
+                <div class="question-text" id="question-text"></div>
+            </div>
+
+            <!-- 选项区 -->
+            <div class="options-area" id="options-area"></div>
+
+            <!-- 导航区 -->
+            <div class="nav-area">
+                <button class="nav-btn prev-btn" id="prev-btn" onclick="prevQuestion()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    上一题
+                </button>
+                <button class="nav-btn next-btn" id="next-btn" onclick="nextQuestion()" disabled>
+                    下一题
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M6 3L11 8L6 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- 题号导航点 -->
+            <div class="dot-grid" id="dot-grid"></div>
+        </div>
+    </section>
+
+    <!-- ========== 结果页 ========== -->
+    <section id="results-section" style="display:none;">
+        <div class="results-container">
+            <!-- 类型结果头部 -->
+            <div class="result-header">
+                <div class="result-type-badge" id="result-badge">
+                    <div class="badge-icon" id="badge-icon"></div>
+                    <h2 class="badge-title" id="badge-title"></h2>
+                    <p class="badge-subtitle" id="badge-subtitle"></p>
+                </div>
+            </div>
+
+            <!-- 一句话总结 -->
+            <div class="result-one-liner" id="result-one-liner"></div>
+
+            <!-- 评分概览 -->
+            <div class="score-overview" id="score-overview"></div>
+
+            <!-- 雷达图 -->
+            <div class="chart-section">
+                <h3 class="section-title">📊 六维恋爱画像</h3>
+                <div class="chart-container" id="radar-chart"></div>
+            </div>
+
+            <!-- 柱状图 -->
+            <div class="chart-section">
+                <h3 class="section-title">📈 维度得分对比</h3>
+                <div class="chart-container" id="bar-chart"></div>
+            </div>
+
+            <!-- 详细分析 -->
+            <div class="analysis-section">
+                <h3 class="section-title">🔍 深度分析</h3>
+                <div id="detail-analysis"></div>
+            </div>
+
+            <!-- 恋爱建议 -->
+            <div class="advice-section">
+                <h3 class="section-title">💡 给你的恋爱建议</h3>
+                <div id="love-advice"></div>
+            </div>
+
+            <!-- 匹配分析 -->
+            <div class="match-section">
+                <h3 class="section-title">💞 你和哪种类型最配</h3>
+                <div id="match-analysis"></div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="result-actions" id="result-actions">
+                <button class="action-btn retry-btn" onclick="retryTest()">🔄 重新测试</button>
+                <button class="action-btn share-btn" onclick="shareResult()">📤 分享结果</button>
+            </div>
+
+            <!-- 免责声明 -->
+            <p class="disclaimer">⚠ 本测试仅供娱乐和自我探索参考，不构成心理学诊断。爱情没有标准答案，了解自己是第一步 ❤</p>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

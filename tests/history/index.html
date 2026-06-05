@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>你是哪个历史人物？—— 人格特质测试</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+</head>
+<body class="wt-has-nav">
+<nav class="wt-nav">
+    <a href="../../index.html">← 返回测试集合</a>
+    <span style="color:rgba(255,255,255,0.2);">|</span>
+    <span class="wt-nav-logo">W-Test</span>
+</nav>
+
+<!-- ===== LANDING ===== -->
+<section class="landing" id="landing">
+  <div class="landing-icon">🏯</div>
+  <h1>你是哪个历史人物？</h1>
+  <p class="subtitle">基于大五人格科学的 50 题深度测试，融合情境选择题与自评量表，还原你的人格画像，找到跨越千年的灵魂共鸣者。</p>
+  <div class="features">
+    <div class="feature">
+      <div class="feat-icon">🎯</div>
+      <div class="feat-text">五维人格分析</div>
+    </div>
+    <div class="feature">
+      <div class="feat-icon">📊</div>
+      <div class="feat-text">多维雷达图</div>
+    </div>
+    <div class="feature">
+      <div class="feat-icon">👤</div>
+      <div class="feat-text">多位历史人物</div>
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="startTest()">开始测试 →</button>
+  <p class="start-hint">约需 8 分钟</p>
+</section>
+
+<!-- ===== TEST ===== -->
+<section class="test" id="test">
+  <div class="test-header">
+    <h3>答题进度</h3>
+    <div class="progress-bar"><div class="fill" id="progressFill"></div></div>
+    <div class="progress-text" id="progressText">0 / 50</div>
+  </div>
+  <div class="question-card" id="questionCard">
+    <div class="q-number" id="qNumber"></div>
+    <div class="q-text" id="qText"></div>
+    <div class="q-hint" id="qHint"></div>
+    <div class="options" id="options"></div>
+  </div>
+
+  <div class="q-nav">
+    <button class="btn btn-secondary btn-sm" id="btnPrev" onclick="prevQuestion()" disabled>← 上一题</button>
+    <button class="btn btn-secondary btn-sm" id="btnNext" onclick="nextQuestion()">下一题 →</button>
+  </div>
+
+  <div class="q-tabs-wrap">
+    <div class="tabs-label">题目导航（点击跳转）</div>
+    <div class="q-tabs" id="qTabs"></div>
+  </div>
+</section>
+
+<!-- ===== RESULTS ===== -->
+<section class="results" id="results">
+  <div class="result-hero">
+    <div class="badge">测试完成</div>
+    <h2>你的人格画像</h2>
+  </div>
+
+  <div class="figure-card" id="topFigure"></div>
+
+  <div class="chart-section">
+    <h3>五维人格雷达图</h3>
+    <div class="chart-box"><div id="radarChart"></div></div>
+  </div>
+
+  <div class="chart-section">
+    <h3>维度得分对比</h3>
+    <div class="chart-box"><div id="barChart"></div></div>
+  </div>
+
+  <div class="chart-section">
+    <h3>各维度深度解读</h3>
+    <div class="dim-analysis" id="dimAnalysis"></div>
+  </div>
+
+  <div class="other-matches">
+    <h3>备选匹配人物</h3>
+    <div class="other-grid" id="otherMatches"></div>
+  </div>
+
+  <div class="share-section">
+    <button class="btn btn-primary" onclick="shareResult()">📋 复制结果分享</button>
+  </div>
+
+  <div class="retake">
+    <button class="btn btn-secondary btn-sm" onclick="retakeTest()">🔄 重新测试</button>
+  </div>
+</section>
+
+<script src="script.js"></script>
+</body>
+</html>
