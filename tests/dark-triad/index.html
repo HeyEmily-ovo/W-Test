@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暗黑人格测试 - W-Test</title>
+    <meta name="description" content="基于 SD3 学术量表，测量马基雅维利主义、自恋、精神病态三个暗黑人格维度">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
+</head>
+<body class="wt-has-nav">
+    <nav class="wt-nav">
+        <a href="../../index.html">← 返回测试集合</a>
+        <span style="color:rgba(255,255,255,0.2);">|</span>
+        <span class="wt-nav-logo">W-Test</span>
+    </nav>
+
+    <!-- ===== 1. LANDING 首页 ===== -->
+    <section class="section landing-section" id="landing-section">
+        <div class="landing-container">
+            <div class="landing-icon">🌑</div>
+            <h1 class="landing-title">暗黑人格测试</h1>
+            <p class="landing-subtitle">基于 SD3 学术量表 · 27 题深度测评 · 探索你人格中的暗黑面</p>
+
+            <div class="feature-cards">
+                <div class="feature-card">
+                    <div class="feature-icon">🔬</div>
+                    <h3>SD3 学术量表</h3>
+                    <p>基于 Jones &amp; Paulhus (2014) 开发的标准 Short Dark Triad 量表，信效度经过学术检验</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎭</div>
+                    <h3>8 种暗黑人格画像</h3>
+                    <p>从阳光普照到暗黑完全体，精准定位你在马基雅维利主义、自恋、精神病态三大维度的位置</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>常模对比 + 深度分析</h3>
+                    <p>与美国成人常模数据对比，雷达图可视化 + 各维度详细解读 + 个性化成长建议</p>
+                </div>
+            </div>
+
+            <button class="start-btn" onclick="startTest()">
+                <span>开始测试</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M7 4L14 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+
+            <div class="landing-extra-btns">
+                <button class="entry-btn" onclick="showEncyclopedia()">📖 暗黑人格图鉴</button>
+                <button class="entry-btn" onclick="showHistory()">📋 历史记录</button>
+            </div>
+
+            <p class="landing-hint">约需 3~5 分钟 · 27 道题 · 李克特 5 点量表</p>
+
+            <div class="disclaimer-note">
+                ⚠️ 本测试基于学术量表 SD3（Short Dark Triad），仅供<strong>自我探索和教育娱乐</strong>使用，不能替代专业心理诊断。高分不代表"有病"，低分也不代表完全健康——测试测量的是亚临床人格倾向。请勿用测试结果给他人贴标签。
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 2. TEST 答题页 ===== -->
+    <section class="section test-section" id="test-section" style="display:none;">
+        <div class="test-container">
+            <div class="progress-area">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width:0%;"></div>
+                </div>
+                <div class="progress-text" id="progressText">0 / 27</div>
+            </div>
+
+            <div class="question-card" id="questionCard">
+                <div class="q-number" id="qNumber"></div>
+                <div class="q-text" id="qText"></div>
+            </div>
+
+            <div class="options-area" id="options"></div>
+
+            <div class="q-nav">
+                <button class="nav-btn prev-btn" id="btnPrev" onclick="prevQuestion()" disabled>← 上一题</button>
+                <button class="nav-btn next-btn" id="btnNext" onclick="nextQuestion()">下一题 →</button>
+            </div>
+
+            <div class="dot-grid" id="dot-grid"></div>
+        </div>
+    </section>
+
+    <!-- ===== 3. RESULTS 结果页 ===== -->
+    <section class="section results-section" id="results-section" style="display:none;">
+        <div class="results-container">
+            <div class="result-hero">
+                <div class="result-badge">
+                    <div class="result-emoji" id="resultEmoji"></div>
+                    <h2 class="result-name" id="resultName"></h2>
+                    <p class="result-tagline" id="resultTagline"></p>
+                </div>
+            </div>
+
+            <div class="score-overview" id="scoreOverview"></div>
+
+            <!-- 雷达图 -->
+            <div class="chart-section">
+                <h3 class="chart-title">📊 暗黑三联征雷达图（对比常模）</h3>
+                <div class="chart-container" id="radarChart"></div>
+            </div>
+
+            <!-- 维度详情 -->
+            <div class="chart-section">
+                <h3 class="chart-title">🔍 三维度详细解读</h3>
+                <div id="dimensionDetails"></div>
+            </div>
+
+            <!-- 类型画像 -->
+            <div class="chart-section">
+                <h3 class="chart-title">🎭 暗黑人格画像</h3>
+                <div id="typeAnalysis"></div>
+            </div>
+
+            <!-- 建议 -->
+            <div class="chart-section">
+                <h3 class="chart-title">💡 给你的成长建议</h3>
+                <div id="adviceContent"></div>
+            </div>
+
+            <!-- 按钮 -->
+            <div class="result-actions" id="resultActions"></div>
+
+            <p class="disclaimer">
+                ⚠️ 本测试基于 SD3（Short Dark Triad）学术量表，仅供自我探索和教育娱乐使用。<br>
+                高分不代表心理异常，低分也不代表完全健康 —— 测试测量的是亚临床人格倾向。<br>
+                测试结果受自评诚实度影响较大，建议在平静、专注的状态下完成。<br>
+                请勿用测试结果给他人贴标签（如"你是NPD"等）。
+            </p>
+        </div>
+    </section>
+
+    <!-- ===== 4. HISTORY 历史记录页 ===== -->
+    <section class="section history-section" id="history-section" style="display:none;">
+        <div class="history-container">
+            <div class="history-header">
+                <button class="back-btn" onclick="backToLanding()">← 返回首页</button>
+                <h2 class="history-title">📋 测试历史记录</h2>
+                <button class="clear-btn" onclick="clearHistory()">🗑 清空</button>
+            </div>
+            <div id="historyList"></div>
+            <div class="history-empty" id="historyEmpty" style="display:none;">
+                <div class="history-empty-icon">📭</div>
+                <p class="history-empty-text">还没有测试记录</p>
+                <button class="start-btn" onclick="backToLanding();startTest();" style="font-size:16px; padding:14px 40px;">开始第一次测试</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 5. ENCYCLOPEDIA 图鉴页 ===== -->
+    <section class="section encyclopedia-section" id="encyclopedia-section" style="display:none;">
+        <div class="ency-container">
+            <div class="ency-header">
+                <button class="back-btn" onclick="backToLanding()">← 返回</button>
+                <h2 class="ency-title">📖 暗黑人格图鉴</h2>
+                <p class="ency-subtitle">8 种暗黑人格画像完全档案 <span class="ency-hint">（点击卡片翻转查看详情）</span></p>
+            </div>
+            <div class="ency-grid" id="encyclopediaGrid"></div>
+        </div>
+    </section>
+
+    <script src="script.js"></script>
+</body>
+</html>

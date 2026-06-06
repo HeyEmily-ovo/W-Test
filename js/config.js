@@ -82,6 +82,19 @@ const TEST_CONFIG = [
     tags: ['趣味', '动物', '人格'],
     featured: false,
     path: 'tests/animal/index.html'
+  },
+  {
+    id: 'dark-triad',
+    name: '暗黑人格测试',
+    icon: '🌑',
+    description: '基于 SD3 学术量表，测量马基雅维利主义、自恋、精神病态三大暗黑人格维度',
+    color: '#7C3AED',
+    gradient: 'linear-gradient(135deg, #4C1D95 0%, #7C3AED 50%, #EC4899 100%)',
+    questions: 27,
+    duration: 5,
+    tags: ['人格', '心理学', '暗黑人格'],
+    featured: true,
+    path: 'tests/dark-triad/index.html'
   }
 ];
 
