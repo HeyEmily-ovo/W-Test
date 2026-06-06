@@ -952,7 +952,7 @@ function renderEncyclopedia() {
                                 const dimData = DIMENSIONS.find(d => d.id === dim);
                                 return `
                                     <div class="ency-bar-row">
-                                        <span class="ency-bar-label">${dimData.emoji}</span>
+                                        <span class="ency-bar-label">${dimData.emoji} ${dimData.name}</span>
                                         <div class="ency-bar-track">
                                             <div class="ency-bar-fill" style="width:${card.stats[dim]}%; background:${dimData.color};"></div>
                                         </div>

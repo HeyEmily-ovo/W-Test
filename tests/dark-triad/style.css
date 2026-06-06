@@ -1147,7 +1147,7 @@ body {
   margin-bottom: 4px;
 }
 
-.ency-bar-label { font-size: 14px; flex-shrink: 0; }
+.ency-bar-label { font-size: 12px; flex-shrink: 0; width: 72px; white-space: nowrap; }
 
 .ency-bar-track {
   flex: 1;
