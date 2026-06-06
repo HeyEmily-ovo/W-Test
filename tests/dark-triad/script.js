@@ -646,7 +646,7 @@ function renderRadarChart(scores) {
                 }
                 return p.name + '<br/>常模均值: <b>' + p.value.toFixed(2) + '</b>';
             },
-            backgroundColor: '#1A1A28',
+            backgroundColor: '#222238',
             borderColor: '#2A2A3C',
             textStyle: { color: '#E0DCE0', fontSize: 13 }
         },
