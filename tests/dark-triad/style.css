@@ -248,6 +248,15 @@ body {
   transform: translateY(-2px);
 }
 
+/* 版权 */
+.landing-copyright {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 20px;
+  opacity: 0.6;
+}
+
 /* 免责声明 */
 .disclaimer-note {
   margin-top: 32px;
