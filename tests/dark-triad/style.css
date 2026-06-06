@@ -1147,7 +1147,7 @@ body {
   margin-bottom: 4px;
 }
 
-.ency-bar-label { font-size: 12px; flex-shrink: 0; width: 72px; white-space: nowrap; }
+.ency-bar-label { font-size: 11px; flex-shrink: 0; width: 100px; white-space: nowrap; }
 
 .ency-bar-track {
   flex: 1;
@@ -1217,6 +1217,7 @@ body {
   .ency-grid { grid-template-columns: repeat(2, 1fr); }
   .ency-card { height: 340px; }
   .ency-title { font-size: 24px; }
+  .ency-bar-label { width: 90px; font-size: 10px; }
 }
 
 @media (max-width: 480px) {
@@ -1238,4 +1239,5 @@ body {
   .ency-grid { grid-template-columns: repeat(2, 1fr); }
   .ency-card { height: 320px; }
   .ency-title { font-size: 20px; }
+  .ency-bar-label { width: 72px; font-size: 10px; }
 }
