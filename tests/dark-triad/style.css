@@ -119,9 +119,13 @@ body {
 }
 
 .landing-icon {
-  font-size: 88px;
   margin-bottom: 20px;
   animation: pulse 2s ease-in-out infinite;
+}
+
+.landing-icon img {
+  width: 100px;
+  height: 100px;
   filter: drop-shadow(0 0 30px rgba(196,30,58,0.25));
 }
 
@@ -1189,7 +1193,7 @@ body {
 
 /* ===== 响应式 ===== */
 @media (max-width: 680px) {
-  .landing-icon { font-size: 64px; }
+  .landing-icon img { width: 80px; height: 80px; }
   .landing-title { font-size: 28px; }
   .landing-subtitle { font-size: 15px; margin-bottom: 28px; }
 
@@ -1221,7 +1225,7 @@ body {
 }
 
 @media (max-width: 480px) {
-  .landing-icon { font-size: 52px; }
+  .landing-icon img { width: 64px; height: 64px; }
   .landing-title { font-size: 24px; }
   .landing-subtitle { font-size: 14px; }
   .start-btn { padding: 14px 36px; font-size: 16px; }
