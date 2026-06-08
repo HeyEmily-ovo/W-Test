@@ -270,18 +270,26 @@ const App = {
     for (let i = 0; i < displayCount; i++) {
       const cardEl = document.createElement('div');
       cardEl.className = 'stack-card';
-      cardEl.dataset.index = i;
-
-      // 扇形排列：根据容器宽度动态调整展开幅度，确保所有牌完整可见
-      const total = displayCount;
-      const mid = (total - 1) / 2;
-      const stackW = stack.clientWidth;
-      // 窄屏缩小展开系数（≤280px→4.5, ≤400px→5.5, 宽屏→7）
-      const spreadFactor = stackW <= 280 ? 4.5 : stackW <= 400 ? 5.5 : 7;
-      const offsetXPct = (i - mid) * spreadFactor;
-      const offsetYPct = Math.abs(i - mid) * 1.5; // 垂直微弧
-      const rotation = (i - mid) * 2.5;
-      const zIndex = 10 + (i < mid ? i : total - i);
+	      // 扇形排列：动态计算展开与旋转，确保所有牌（含旋转后边角）完整可见
+	      const total = displayCount;
+	      const mid = (total - 1) / 2;
+	      const stackW = stack.clientWidth;
+	      // 根据容器宽度确定牌的尺寸（与 CSS 断点一致）
+	      const cardW = stackW <= 250 ? 80 : stackW <= 280 ? 95 : stackW <= 360 ? 115 : 130;
+	      const cardH = stackW <= 250 ? 120 : stackW <= 280 ? 143 : stackW <= 360 ? 173 : 195;
+	      // 旋转后牌的有效半宽 ≈ cardW/2*cos(θ) + cardH/2*sin(θ)
+	      // 限制最大旋转角以控制边界溢出，同时保持视觉效果
+	      const maxRotDeg = stackW <= 250 ? 9 : stackW <= 280 ? 9.5 : 11;
+	      const maxRotRad = maxRotDeg * Math.PI / 180;
+	      const effHalfW = (cardW / 2) * Math.cos(maxRotRad) + (cardH / 2) * Math.sin(maxRotRad);
+	      const padding = 4; // px 安全边距
+	      const maxOffsetPct = mid > 0 ? 50 - (effHalfW + padding) / stackW * 100 : 50;
+	      const spreadFactor = mid > 0 ? maxOffsetPct / mid : 0;
+	      const rotFactor = mid > 0 ? maxRotDeg / mid : 0;
+	      const offsetXPct = (i - mid) * spreadFactor;
+	      const offsetYPct = Math.abs(i - mid) * 1.5;
+	      const rotation = (i - mid) * rotFactor;
+	      const zIndex = 10 + (i < mid ? i : total - i);
 
       cardEl.style.left = (50 + offsetXPct) + '%';
       cardEl.style.top = (12 + offsetYPct) + '%';
