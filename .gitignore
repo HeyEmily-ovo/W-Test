@@ -28,6 +28,7 @@ desktop.ini
 /test/
 /tests-output/
 *.png
+!tests/tarot/img/*.png
 .playwright-mcp/
 
 # 构建输出
