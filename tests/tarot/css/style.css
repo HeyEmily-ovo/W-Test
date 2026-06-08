@@ -951,7 +951,6 @@ body::after {
   width: 400px;
   height: 300px;
   perspective: 800px;
-  overflow: hidden;
 }
 /* 牌堆中的单张牌 */
 .stack-card {

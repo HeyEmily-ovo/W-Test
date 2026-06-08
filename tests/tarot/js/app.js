@@ -272,10 +272,13 @@ const App = {
       cardEl.className = 'stack-card';
       cardEl.dataset.index = i;
 
-      // 扇形排列：百分比定位，自适应任意容器尺寸
+      // 扇形排列：根据容器宽度动态调整展开幅度，确保所有牌完整可见
       const total = displayCount;
       const mid = (total - 1) / 2;
-      const offsetXPct = (i - mid) * 7;        // 水平偏移百分比
+      const stackW = stack.clientWidth;
+      // 窄屏缩小展开系数（≤280px→4.5, ≤400px→5.5, 宽屏→7）
+      const spreadFactor = stackW <= 280 ? 4.5 : stackW <= 400 ? 5.5 : 7;
+      const offsetXPct = (i - mid) * spreadFactor;
       const offsetYPct = Math.abs(i - mid) * 1.5; // 垂直微弧
       const rotation = (i - mid) * 2.5;
       const zIndex = 10 + (i < mid ? i : total - i);
