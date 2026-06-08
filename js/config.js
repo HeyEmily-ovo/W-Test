@@ -95,6 +95,19 @@ const TEST_CONFIG = [
     tags: ['人格', '心理学', '暗黑人格'],
     featured: true,
     path: 'tests/dark-triad/index.html'
+  },
+  {
+    id: 'tarot',
+    name: '塔罗占卜',
+    icon: '🔮',
+    description: '78张经典韦特塔罗牌，支持多种牌阵，AI解读带你探索潜意识',
+    color: '#5B8FBF',
+    gradient: 'linear-gradient(135deg, #1e3a58 0%, #5B8FBF 50%, #89B4D8 100%)',
+    questions: 1,
+    duration: 3,
+    tags: ['趣味', '占卜', '塔罗'],
+    featured: true,
+    path: 'tests/tarot/index.html'
   }
 ];
 

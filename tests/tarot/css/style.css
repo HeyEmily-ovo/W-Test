@@ -1,0 +1,2106 @@
+/* ============================================================
+   塔罗占卜 — 梦幻星空美学
+   设计核心：淡蓝渐变底色 + 闪烁星辰 + 银色点缀 + 毛玻璃卡片
+   ============================================================ */
+
+/* ---------- CSS 变量与基础 ---------- */
+:root {
+  --bg-deep: #162535;
+  --bg-card: rgba(255, 255, 255, 0.78);
+  --bg-glass: rgba(255, 255, 255, 0.55);
+  --text-primary: #1e3044;
+  --text-secondary: #4a6278;
+  --text-muted: #7d94a8;
+  --gold: #b8a060;
+  --gold-light: #d4c898;
+  --gold-dim: #8a7a48;
+  --blue: #5b8fbf;
+  --blue-light: #89b4d8;
+  --blue-deep: #3d6080;
+  --red-mystic: #b06570;
+  --gradient-bg: linear-gradient(160deg, #d4e4f4 0%, #c5d8ec 20%, #d0dff0 40%, #c2daf0 60%, #d8e6f4 80%, #c8dcee 100%);
+  --font-display: 'Georgia', 'Times New Roman', serif;
+  --font-body: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --shadow-gold: 0 0 24px rgba(184, 160, 96, 0.2);
+  --shadow-card: 0 4px 20px rgba(70, 110, 150, 0.1);
+  --radius: 12px;
+  --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===== W-Test 返回导航（固定格式） ===== */
+.wt-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 12px 24px;
+  background: rgba(10, 10, 26, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex; align-items: center; gap: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+.wt-nav a {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: rgba(255,255,255,0.75);
+  text-decoration: none; font-size: 0.9rem; font-weight: 500;
+  transition: color 0.2s;
+}
+.wt-nav a:hover { color: #fff; }
+.wt-nav .wt-nav-logo {
+  font-weight: 700; font-size: 1rem;
+  background: linear-gradient(135deg, #7C5CFC, #FF6B9D);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+body.wt-has-nav { padding-top: 50px; }
+@media (max-width: 600px) {
+  .wt-nav { padding: 10px 16px; }
+  .wt-nav a { font-size: 0.82rem; }
+  body.wt-has-nav { padding-top: 44px; }
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--gradient-bg);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  line-height: 1.7;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+/* ===== 梦幻星空背景 ===== */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    /* 大星 — 十字星芒 */
+    radial-gradient(1.5px 1.5px at 15% 20%, rgba(255,255,255,0.9) 0%, transparent 100%),
+    radial-gradient(1px 6px at 15% 20%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(6px 1px at 15% 20%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 35% 12%, rgba(200,220,255,0.85) 0%, transparent 100%),
+    radial-gradient(0.8px 4px at 35% 12%, rgba(200,220,255,0.25) 0%, transparent 100%),
+    radial-gradient(4px 0.8px at 35% 12%, rgba(200,220,255,0.25) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 72% 18%, rgba(255,255,255,0.9) 0%, transparent 100%),
+    radial-gradient(1px 6px at 72% 18%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(6px 1px at 72% 18%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 88% 75%, rgba(220,230,255,0.85) 0%, transparent 100%),
+    radial-gradient(0.8px 4px at 88% 75%, rgba(220,230,255,0.25) 0%, transparent 100%),
+    radial-gradient(4px 0.8px at 88% 75%, rgba(220,230,255,0.25) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 50% 65%, rgba(255,255,255,0.8) 0%, transparent 100%),
+    radial-gradient(0.8px 4px at 50% 65%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(4px 0.8px at 50% 65%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    /* 中等星点 */
+    radial-gradient(2px 2px at 25% 45%, rgba(200,215,240,0.7), transparent),
+    radial-gradient(2px 2px at 55% 28%, rgba(210,225,245,0.7), transparent),
+    radial-gradient(2px 2px at 80% 35%, rgba(200,215,240,0.65), transparent),
+    radial-gradient(2px 2px at 10% 70%, rgba(210,225,245,0.6), transparent),
+    radial-gradient(2px 2px at 60% 80%, rgba(190,210,235,0.65), transparent),
+    radial-gradient(2px 2px at 45% 90%, rgba(200,215,240,0.55), transparent),
+    radial-gradient(2px 2px at 92% 55%, rgba(210,225,245,0.6), transparent),
+    radial-gradient(2px 2px at 18% 85%, rgba(200,215,240,0.6), transparent),
+    /* 小星点 — 密集散布 */
+    radial-gradient(1px 1px at 30% 15%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 62% 8%, rgba(255,255,255,0.65), transparent),
+    radial-gradient(1px 1px at 8% 38%, rgba(230,240,255,0.6), transparent),
+    radial-gradient(1px 1px at 42% 48%, rgba(255,255,255,0.55), transparent),
+    radial-gradient(1px 1px at 68% 42%, rgba(230,240,255,0.6), transparent),
+    radial-gradient(1px 1px at 85% 8%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 22% 58%, rgba(230,240,255,0.55), transparent),
+    radial-gradient(1px 1px at 52% 72%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 78% 62%, rgba(230,240,255,0.55), transparent),
+    radial-gradient(1px 1px at 12% 8%, rgba(255,255,255,0.55), transparent),
+    radial-gradient(1px 1px at 95% 22%, rgba(230,240,255,0.55), transparent),
+    radial-gradient(1px 1px at 38% 82%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 70% 92%, rgba(230,240,255,0.45), transparent),
+    radial-gradient(1px 1px at 58% 55%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1px 1px at 28% 32%, rgba(230,240,255,0.55), transparent),
+    /* 萤火虫光晕 */
+    radial-gradient(80px 80px at 20% 30%, rgba(180, 210, 240, 0.12), transparent),
+    radial-gradient(60px 60px at 70% 60%, rgba(170, 200, 235, 0.1), transparent),
+    radial-gradient(90px 90px at 50% 15%, rgba(190, 215, 245, 0.1), transparent),
+    radial-gradient(70px 70px at 85% 80%, rgba(175, 205, 238, 0.1), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 闪烁星辰 — 周期性明灭 */
+@keyframes starTwinkle1 {
+  0%, 100% { opacity: 1; }
+  40% { opacity: 0.35; }
+  70% { opacity: 0.7; }
+}
+@keyframes starTwinkle2 {
+  0%, 100% { opacity: 0.6; }
+  30% { opacity: 1; }
+  60% { opacity: 0.3; }
+}
+@keyframes starTwinkle3 {
+  0%, 100% { opacity: 0.7; }
+  25% { opacity: 0.3; }
+  55% { opacity: 1; }
+  80% { opacity: 0.5; }
+}
+
+/* 闪烁星层 — 用伪元素的 box-shadow 实现动画 */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  animation: starTwinkle1 4s ease-in-out infinite;
+  background:
+    radial-gradient(1.2px 1.2px at 15% 20%, rgba(255,255,255,0.95), transparent),
+    radial-gradient(1.2px 1.2px at 72% 18%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1.2px 1.2px at 88% 75%, rgba(220,230,255,0.9), transparent),
+    radial-gradient(1.2px 1.2px at 35% 12%, rgba(200,220,255,0.85), transparent),
+    radial-gradient(1.2px 1.2px at 50% 65%, rgba(255,255,255,0.85), transparent);
+}
+
+/* ---------- 布局容器 ---------- */
+.app-container {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  padding: 24px 20px 60px;
+  overflow-x: hidden;
+}
+
+/* Screen 切换 */
+.screen {
+  display: none;
+  animation: fadeSlideIn 0.5s ease;
+}
+.screen.active {
+  display: block;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- 标题与品牌 ---------- */
+.brand {
+  text-align: center;
+  padding: 40px 0 20px;
+}
+.brand h1 {
+  font-family: var(--font-display);
+  font-size: 2.6rem;
+  color: #3d6080;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 30px rgba(100, 150, 200, 0.18);
+  margin-bottom: 8px;
+}
+.brand .subtitle {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  letter-spacing: 0.2em;
+}
+
+/* ---------- 通用卡片 ---------- */
+.card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(140, 175, 210, 0.2);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow-card);
+  transition: var(--transition);
+}
+.card:hover {
+  border-color: rgba(140, 175, 210, 0.4);
+  box-shadow: var(--shadow-card), var(--shadow-gold);
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border: 1px solid var(--gold-dim);
+  border-radius: 8px;
+  background: rgba(140, 180, 215, 0.12);
+  color: #3a5d78;
+  font-size: 1rem;
+  font-family: var(--font-body);
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  font-weight: 500;
+}
+.btn:hover {
+  background: rgba(140, 180, 215, 0.22);
+  border-color: var(--blue);
+  box-shadow: 0 0 20px rgba(100, 150, 200, 0.18);
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn-primary {
+  background: linear-gradient(135deg, rgba(100, 155, 210, 0.2), rgba(140, 180, 220, 0.2));
+  border-color: var(--blue);
+  color: #2d5370;
+}
+.btn-block {
+  display: flex;
+  width: 100%;
+}
+.btn-sm {
+  padding: 8px 18px;
+  font-size: 0.9rem;
+}
+.btn-ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-secondary);
+}
+.btn-ghost:hover {
+  border-color: rgba(140, 175, 210, 0.25);
+  background: rgba(140, 175, 210, 0.08);
+  color: var(--text-primary);
+}
+
+/* ---------- 领域选择 ---------- */
+.domain-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.domain-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 12px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(140, 175, 210, 0.15);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+}
+.domain-item:hover {
+  border-color: rgba(140, 180, 215, 0.45);
+  background: rgba(140, 180, 215, 0.1);
+  transform: translateY(-3px);
+}
+.domain-item.selected {
+  border-color: var(--blue);
+  background: rgba(140, 190, 225, 0.18);
+  box-shadow: 0 0 20px rgba(100, 155, 210, 0.18);
+}
+.domain-item .icon {
+  font-size: 2rem;
+}
+.domain-item .name {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.domain-item .desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ---------- 输入框 ---------- */
+.input-group {
+  margin-top: 16px;
+}
+.input-group label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+.textarea {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(140, 175, 210, 0.25);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  resize: vertical;
+  min-height: 80px;
+  transition: var(--transition);
+}
+.textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 15px rgba(100, 155, 210, 0.15);
+}
+.textarea::placeholder {
+  color: var(--text-muted);
+}
+
+/* ---------- 牌阵选择 ---------- */
+.spread-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.spread-item {
+  padding: 20px 16px;
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(140, 175, 210, 0.15);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.spread-item:hover {
+  border-color: rgba(140, 180, 215, 0.45);
+  background: rgba(140, 180, 215, 0.1);
+}
+.spread-item.selected {
+  border-color: var(--blue);
+  background: rgba(140, 190, 225, 0.18);
+  box-shadow: 0 0 20px rgba(100, 155, 210, 0.18);
+}
+.spread-item .spread-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.spread-item .spread-icon {
+  font-size: 1.5rem;
+}
+.spread-item .spread-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.spread-item .spread-count {
+  font-size: 0.8rem;
+  color: var(--gold-dim);
+}
+.spread-item .spread-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   洗牌动画区 — 五牌交响 · 四阶仪式 · 星辰共鸣
+   设计理念：升腾→编织→星璇→归位，配以能量光环与魔法粒子
+   ============================================================ */
+.shuffle-area {
+  text-align: center;
+  padding: 40px 0;
+}
+
+/* —— 牌堆容器 —— */
+.shuffle-deck {
+  position: relative;
+  width: 280px;
+  height: 340px;
+  margin: 0 auto 30px;
+  cursor: pointer;
+  perspective: 1200px;
+}
+
+/* —— 单张牌基座 —— */
+.deck-card {
+  position: absolute;
+  width: 140px;
+  height: 210px;
+  left: 50%;
+  top: 50%;
+  margin-left: -70px;
+  margin-top: -105px;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 24px rgba(50, 90, 130, 0.35);
+  transition: box-shadow 0.5s ease, filter 0.5s ease;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+/* 五张牌 — 初始微错叠（自然牌堆感） */
+.deck-card:nth-child(2)  { transform: rotate(-3.5deg) translateY(0); }
+.deck-card:nth-child(3)  { transform: rotate(-1deg) translateY(3px); }
+.deck-card:nth-child(4)  { transform: rotate(2deg) translateY(6px); }
+.deck-card:nth-child(5)  { transform: rotate(5deg) translateY(9px); }
+.deck-card:nth-child(6)  { transform: rotate(8deg) translateY(12px); }
+
+/* —— 悬停呼吸 — 暗示可交互 —— */
+.shuffle-deck:not(.shuffling):hover .deck-card {
+  filter: brightness(1.08);
+}
+.shuffle-deck:not(.shuffling):hover .deck-card:nth-child(2) {
+  animation: deckBreathe1 2.5s ease-in-out infinite;
+}
+.shuffle-deck:not(.shuffling):hover .deck-card:nth-child(3) {
+  animation: deckBreathe2 2.5s ease-in-out infinite;
+}
+.shuffle-deck:not(.shuffling):hover .deck-card:nth-child(4) {
+  animation: deckBreathe3 2.5s ease-in-out infinite 0.12s;
+}
+.shuffle-deck:not(.shuffling):hover .deck-card:nth-child(5) {
+  animation: deckBreathe4 2.5s ease-in-out infinite 0.24s;
+}
+.shuffle-deck:not(.shuffling):hover .deck-card:nth-child(6) {
+  animation: deckBreathe5 2.5s ease-in-out infinite 0.36s;
+}
+
+@keyframes deckBreathe1 { 0%,100%{transform:rotate(-3.5deg) translateY(0)} 50%{transform:rotate(-5deg) translateY(-7px)} }
+@keyframes deckBreathe2 { 0%,100%{transform:rotate(-1deg) translateY(3px)} 50%{transform:rotate(-2deg) translateY(-4px)} }
+@keyframes deckBreathe3 { 0%,100%{transform:rotate(2deg) translateY(6px)} 50%{transform:rotate(1deg) translateY(-1px)} }
+@keyframes deckBreathe4 { 0%,100%{transform:rotate(5deg) translateY(9px)} 50%{transform:rotate(4deg) translateY(2px)} }
+@keyframes deckBreathe5 { 0%,100%{transform:rotate(8deg) translateY(12px)} 50%{transform:rotate(6deg) translateY(5px)} }
+
+/* ===== 卡背图案（与选牌阶段共用视觉语言）===== */
+.deck-card .back-pattern {
+  width: 100%;
+  height: 100%;
+  border-radius: 9px;
+  background-color: #1e3a58;
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px),
+    repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px),
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(130,180,220,0.18) 0%, transparent 70%);
+  border: 3px solid #4a7898;
+  outline: 1px solid #7aaccc;
+  outline-offset: -6px;
+  box-shadow: inset 0 0 0 4px rgba(200,225,245,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+/* 四角星饰 */
+.deck-card .back-pattern::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  background:
+    radial-gradient(4px 4px at 0% 0%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(4px 4px at 100% 0%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(4px 4px at 0% 100%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(4px 4px at 100% 100%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(6px 6px at 0% 0%, rgba(180,215,240,0.5), transparent 70%),
+    radial-gradient(6px 6px at 100% 0%, rgba(180,215,240,0.5), transparent 70%),
+    radial-gradient(6px 6px at 0% 100%, rgba(180,215,240,0.5), transparent 70%),
+    radial-gradient(6px 6px at 100% 100%, rgba(180,215,240,0.5), transparent 70%);
+  z-index: 1;
+  pointer-events: none;
+}
+/* 中央曼陀罗 */
+.deck-card .back-pattern::after {
+  content: '';
+  position: absolute;
+  width: 70%;
+  height: 70%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background:
+    conic-gradient(from 0deg, transparent 10deg, rgba(180,210,240,0.2) 11deg, transparent 12deg,
+                             transparent 30deg, rgba(180,210,240,0.2) 31deg, transparent 32deg,
+                             transparent 50deg, rgba(180,210,240,0.2) 51deg, transparent 52deg,
+                             transparent 70deg, rgba(180,210,240,0.2) 71deg, transparent 72deg,
+                             transparent 90deg, rgba(180,210,240,0.2) 91deg, transparent 92deg,
+                             transparent 110deg, rgba(180,210,240,0.2) 111deg, transparent 112deg,
+                             transparent 130deg, rgba(180,210,240,0.2) 131deg, transparent 132deg,
+                             transparent 150deg, rgba(180,210,240,0.2) 151deg, transparent 152deg,
+                             transparent 170deg, rgba(180,210,240,0.2) 171deg, transparent 172deg,
+                             transparent 190deg, rgba(180,210,240,0.2) 191deg, transparent 192deg,
+                             transparent 210deg, rgba(180,210,240,0.2) 211deg, transparent 212deg,
+                             transparent 230deg, rgba(180,210,240,0.2) 231deg, transparent 232deg,
+                             transparent 250deg, rgba(180,210,240,0.2) 251deg, transparent 252deg,
+                             transparent 270deg, rgba(180,210,240,0.2) 271deg, transparent 272deg,
+                             transparent 290deg, rgba(180,210,240,0.2) 291deg, transparent 292deg,
+                             transparent 310deg, rgba(180,210,240,0.2) 311deg, transparent 312deg,
+                             transparent 330deg, rgba(180,210,240,0.2) 331deg, transparent 332deg,
+                             transparent 350deg, rgba(180,210,240,0.2) 351deg, transparent 352deg),
+    radial-gradient(circle, transparent 50%, rgba(150,200,235,0.3) 51%, rgba(150,200,235,0.3) 52%, transparent 53%),
+    radial-gradient(circle, transparent 37%, rgba(180,215,240,0.35) 38%, rgba(180,215,240,0.35) 39%, transparent 40%),
+    radial-gradient(circle, transparent 24%, rgba(200,225,245,0.4) 25%, rgba(200,225,245,0.4) 26%, transparent 27%),
+    radial-gradient(circle, rgba(100,160,215,0.25) 0%, rgba(70,130,190,0.2) 50%, transparent 70%),
+    radial-gradient(circle, rgba(220,235,250,0.6) 0%, rgba(180,210,240,0.3) 8%, transparent 20%);
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+}
+.deck-card .deck-back-img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  z-index: 1;
+}
+
+/* ============================================================
+   洗牌核心动画 — 五牌 · 四阶 · 3秒交响
+   阶段1 (0-20%):   升腾展开 — 牌面轻盈抬升，扇形散开
+   阶段2 (20-42%):  交错编织 — 如蝴蝶洗牌法般穿越交织
+   阶段3 (42-68%):  星璇回流 — 绕中心漩涡旋转，能量汇聚
+   阶段4 (68-100%): 优雅归位 — 柔和减速，依次落回牌堆
+   ============================================================ */
+
+/* —— 动画触发（使用animation-delay制造波浪级联）—— */
+.shuffle-deck.shuffling .deck-card {
+  animation-duration: 3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-iteration-count: infinite;
+}
+.shuffle-deck.shuffling .deck-card:nth-child(2) {
+  animation-name: shuffleCard1;
+  animation-delay: 0s;
+}
+.shuffle-deck.shuffling .deck-card:nth-child(3) {
+  animation-name: shuffleCard2;
+  animation-delay: 0.06s;
+}
+.shuffle-deck.shuffling .deck-card:nth-child(4) {
+  animation-name: shuffleCard3;
+  animation-delay: 0.12s;
+}
+.shuffle-deck.shuffling .deck-card:nth-child(5) {
+  animation-name: shuffleCard4;
+  animation-delay: 0.18s;
+}
+.shuffle-deck.shuffling .deck-card:nth-child(6) {
+  animation-name: shuffleCard5;
+  animation-delay: 0.24s;
+}
+
+/* ---- Card 1: 左上方弧线 → 右方穿越 → 上方旋绕 → 归位 ---- */
+@keyframes shuffleCard1 {
+  0%   { transform: rotate(-3.5deg) translate(0, 0) scale(1); }
+  /* 阶段1: 向左上方飘升 */
+  8%   { transform: rotate(-10deg) translate(-25px, -28px) scale(1.04); }
+  16%  { transform: rotate(-16deg) translate(-52px, -12px) scale(1.06); }
+  20%  { transform: rotate(-14deg) translate(-48px, -18px) scale(1.05); }
+  /* 阶段2: 穿越到右侧下方 */
+  28%  { transform: rotate(2deg) translate(-8px, 15px) scale(0.96); }
+  36%  { transform: rotate(13deg) translate(35px, -2px) scale(0.94); }
+  42%  { transform: rotate(16deg) translate(50px, -14px) scale(0.93); }
+  /* 阶段3: 星璇 — 绕中心上方大弧 */
+  50%  { transform: rotate(-8deg) translate(15px, -40px) scale(1.02); }
+  58%  { transform: rotate(-22deg) translate(-30px, -20px) scale(1.04); }
+  68%  { transform: rotate(-10deg) translate(-20px, -30px) scale(1.01); }
+  /* 阶段4: 减速归位 */
+  80%  { transform: rotate(-6deg) translate(-12px, -8px) scale(1); }
+  90%  { transform: rotate(-4deg) translate(-4px, -2px) scale(1); }
+  100% { transform: rotate(-3.5deg) translate(0, 0) scale(1); }
+}
+
+/* ---- Card 2: 直上抬升 → 左方轻摆 → 中心漩涡轴 → 归位 ---- */
+@keyframes shuffleCard2 {
+  0%   { transform: rotate(-1deg) translate(0, 3px) scale(1); }
+  /* 阶段1: 垂直抬升 */
+  8%   { transform: rotate(0deg) translate(4px, -22px) scale(1.03); }
+  16%  { transform: rotate(-2deg) translate(-2px, -38px) scale(1.05); }
+  20%  { transform: rotate(1deg) translate(2px, -35px) scale(1.04); }
+  /* 阶段2: 左侧轻柔摆动 */
+  28%  { transform: rotate(-10deg) translate(-18px, -12px) scale(0.97); }
+  36%  { transform: rotate(-6deg) translate(-8px, -22px) scale(0.96); }
+  42%  { transform: rotate(4deg) translate(10px, -18px) scale(0.95); }
+  /* 阶段3: 中心漩涡轴心 */
+  50%  { transform: rotate(-14deg) translate(-5px, -30px) scale(1.01); }
+  58%  { transform: rotate(5deg) translate(8px, -15px) scale(1.03); }
+  68%  { transform: rotate(-3deg) translate(0px, -25px) scale(1); }
+  /* 阶段4: 柔和落回 */
+  80%  { transform: rotate(-2deg) translate(-2px, -5px) scale(1); }
+  90%  { transform: rotate(-1deg) translate(0, 1px) scale(1); }
+  100% { transform: rotate(-1deg) translate(0, 3px) scale(1); }
+}
+
+/* ---- Card 3: 偏右上飘 → 大幅右穿越 → 右方旋绕 → 归位 ---- */
+@keyframes shuffleCard3 {
+  0%   { transform: rotate(2deg) translate(0, 6px) scale(1); }
+  /* 阶段1: 右上飘升 */
+  8%   { transform: rotate(8deg) translate(18px, -18px) scale(1.04); }
+  16%  { transform: rotate(14deg) translate(38px, -8px) scale(1.06); }
+  20%  { transform: rotate(13deg) translate(44px, -14px) scale(1.05); }
+  /* 阶段2: 穿越到左侧 */
+  28%  { transform: rotate(-4deg) translate(-12px, 10px) scale(0.95); }
+  36%  { transform: rotate(-14deg) translate(-35px, -5px) scale(0.93); }
+  42%  { transform: rotate(-15deg) translate(-45px, -12px) scale(0.92); }
+  /* 阶段3: 右方漩涡绕行 */
+  50%  { transform: rotate(3deg) translate(8px, -38px) scale(1.02); }
+  58%  { transform: rotate(18deg) translate(25px, -18px) scale(1.04); }
+  68%  { transform: rotate(8deg) translate(16px, -28px) scale(1.01); }
+  /* 阶段4: 减速归位 */
+  80%  { transform: rotate(5deg) translate(8px, -6px) scale(1); }
+  90%  { transform: rotate(3deg) translate(3px, 4px) scale(1); }
+  100% { transform: rotate(2deg) translate(0, 6px) scale(1); }
+}
+
+/* ---- Card 4: 右方飘出 → 左侧深穿 → 下方旋绕 → 归位 ---- */
+@keyframes shuffleCard4 {
+  0%   { transform: rotate(5deg) translate(0, 9px) scale(1); }
+  /* 阶段1: 向右外飘 */
+  8%   { transform: rotate(11deg) translate(28px, -10px) scale(1.03); }
+  16%  { transform: rotate(17deg) translate(48px, -4px) scale(1.05); }
+  20%  { transform: rotate(16deg) translate(52px, -10px) scale(1.04); }
+  /* 阶段2: 大幅度左穿越 */
+  28%  { transform: rotate(-2deg) translate(5px, 12px) scale(0.96); }
+  36%  { transform: rotate(-12deg) translate(-28px, 0px) scale(0.94); }
+  42%  { transform: rotate(-18deg) translate(-50px, -6px) scale(0.93); }
+  /* 阶段3: 下方偏右漩涡 */
+  50%  { transform: rotate(2deg) translate(10px, -25px) scale(1.02); }
+  58%  { transform: rotate(14deg) translate(28px, -8px) scale(1.03); }
+  68%  { transform: rotate(6deg) translate(15px, -20px) scale(1); }
+  /* 阶段4: 落回 */
+  80%  { transform: rotate(5deg) translate(8px, 0px) scale(1); }
+  90%  { transform: rotate(5deg) translate(2px, 6px) scale(1); }
+  100% { transform: rotate(5deg) translate(0, 9px) scale(1); }
+}
+
+/* ---- Card 5: 最右飘出 → 最深左穿 → 底部旋绕 → 最后归位 ---- */
+@keyframes shuffleCard5 {
+  0%   { transform: rotate(8deg) translate(0, 12px) scale(1); }
+  /* 阶段1: 最右外飘 */
+  8%   { transform: rotate(14deg) translate(32px, -4px) scale(1.03); }
+  16%  { transform: rotate(20deg) translate(54px, 2px) scale(1.05); }
+  20%  { transform: rotate(19deg) translate(58px, -6px) scale(1.04); }
+  /* 阶段2: 最深左穿越 */
+  28%  { transform: rotate(-3deg) translate(10px, 14px) scale(0.96); }
+  36%  { transform: rotate(-16deg) translate(-34px, 4px) scale(0.94); }
+  42%  { transform: rotate(-20deg) translate(-55px, -4px) scale(0.92); }
+  /* 阶段3: 底部漩涡 */
+  50%  { transform: rotate(-5deg) translate(-10px, -20px) scale(1.02); }
+  58%  { transform: rotate(10deg) translate(30px, -5px) scale(1.04); }
+  68%  { transform: rotate(5deg) translate(12px, -18px) scale(1.01); }
+  /* 阶段4: 最后落回 */
+  80%  { transform: rotate(8deg) translate(10px, 2px) scale(1); }
+  90%  { transform: rotate(8deg) translate(2px, 9px) scale(1); }
+  100% { transform: rotate(8deg) translate(0, 12px) scale(1); }
+}
+
+/* ============================================================
+   能量光环 — 旋转的星辰之环
+   ============================================================ */
+/* 内环 — 星芒光点旋转 */
+.shuffle-deck::before {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 240px;
+  height: 240px;
+  margin: -120px 0 0 -120px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 25deg,
+    rgba(160,210,240,0.15) 35deg,
+    rgba(180,220,250,0.35) 45deg,
+    rgba(140,190,230,0.15) 55deg,
+    transparent 65deg,
+    transparent 115deg,
+    rgba(140,195,235,0.15) 125deg,
+    rgba(170,210,245,0.35) 135deg,
+    rgba(140,190,230,0.15) 145deg,
+    transparent 155deg,
+    transparent 205deg,
+    rgba(150,200,240,0.15) 215deg,
+    rgba(175,215,245,0.35) 225deg,
+    rgba(140,190,230,0.15) 235deg,
+    transparent 245deg,
+    transparent 295deg,
+    rgba(145,195,235,0.15) 305deg,
+    rgba(170,210,245,0.35) 315deg,
+    rgba(140,190,230,0.15) 325deg,
+    transparent 335deg
+  );
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 2px));
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.shuffle-deck.shuffling::before {
+  opacity: 1;
+  animation: ringRotate 4s linear infinite, ringPulse 1.8s ease-in-out infinite;
+}
+@keyframes ringRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes ringPulse {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.5); }
+}
+
+/* 外环 — 洗牌光晕（::after 重用） */
+.shuffle-deck::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 300px;
+  height: 300px;
+  margin: -150px 0 0 -150px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -2;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  background: radial-gradient(circle, rgba(140,190,230,0) 40%, rgba(140,190,230,0) 100%);
+}
+.shuffle-deck.shuffling::after {
+  opacity: 1;
+  animation: shuffleGlow 3s ease-in-out infinite;
+}
+@keyframes shuffleGlow {
+  0%, 100% {
+    background: radial-gradient(circle, rgba(140,190,230,0) 35%, transparent 100%);
+  }
+  20% {
+    background: radial-gradient(circle, rgba(140,190,230,0.22) 20%, rgba(170,210,245,0.12) 50%, rgba(140,190,230,0.04) 70%, transparent 100%);
+  }
+  50% {
+    background: radial-gradient(circle, rgba(140,190,230,0.35) 15%, rgba(180,220,250,0.18) 45%, rgba(140,190,230,0.08) 65%, transparent 100%);
+  }
+  75% {
+    background: radial-gradient(circle, rgba(140,190,230,0.18) 25%, rgba(160,210,240,0.08) 55%, transparent 100%);
+  }
+}
+
+/* ============================================================
+   星光粒子系统 — 牌面迸发的魔法星尘
+   ============================================================ */
+/* CSS粒子 — 每张牌迸发一组光点 */
+.shuffle-deck.shuffling .deck-card::after {
+  content: '';
+  position: absolute;
+  width: 3px; height: 3px;
+  background: transparent;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow:
+    0     -8px  4px 1px rgba(200,225,245,0.9),
+    10px  -18px 3px 1px rgba(180,210,240,0.7),
+    -8px  -22px 5px 1px rgba(220,235,250,0.6),
+    18px  -6px  3px 1px rgba(200,220,245,0.5),
+    -14px -12px 4px 1px rgba(180,200,240,0.7),
+    5px   -28px 2px 1px rgba(210,230,250,0.5),
+    -5px  -32px 3px 1px rgba(190,215,240,0.4);
+  animation: shuffleSpark 1.6s ease-out infinite;
+}
+.shuffle-deck.shuffling .deck-card:nth-child(2)::after  { animation-delay: 0s; }
+.shuffle-deck.shuffling .deck-card:nth-child(3)::after  { animation-delay: 0.35s; }
+.shuffle-deck.shuffling .deck-card:nth-child(4)::after  { animation-delay: 0.7s; }
+.shuffle-deck.shuffling .deck-card:nth-child(5)::after  { animation-delay: 1.05s; }
+.shuffle-deck.shuffling .deck-card:nth-child(6)::after  { animation-delay: 1.4s; }
+
+@keyframes shuffleSpark {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.5); }
+  15%  { opacity: 1; transform: translate(8px, -20px) scale(1.3); }
+  40%  { opacity: 0.7; transform: translate(-15px, -55px) scale(1); }
+  100% { opacity: 0; transform: translate(5px, -110px) scale(0.2); }
+}
+
+/* JS生成的漂浮魔法粒子 */
+.shuffle-particles {
+  position: absolute;
+  inset: -20px;
+  pointer-events: none;
+  z-index: 15;
+  overflow: visible;
+}
+.magic-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+}
+@keyframes particleFloat {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0); }
+  12%  { opacity: 0.9; }
+  25%  { opacity: 0.7; transform: translate(15px, -35px) scale(1.2); }
+  55%  { opacity: 0.4; transform: translate(-10px, -80px) scale(0.7); }
+  100% { opacity: 0; transform: translate(20px, -140px) scale(0.1); }
+}
+
+/* 洗牌密语 */
+.shuffle-hint {
+  color: var(--blue-light);
+  font-size: 0.95rem;
+  margin-top: 20px;
+  opacity: 0.8;
+  transition: all 0.5s ease;
+  text-shadow: 0 0 20px rgba(140,190,230,0.35);
+}
+.shuffle-deck.shuffling ~ .shuffle-hint {
+  animation: hintPulse 3s ease-in-out infinite;
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.5; letter-spacing: 0.05em; transform: translateY(0); }
+  50%      { opacity: 1;   letter-spacing: 0.12em; transform: translateY(-2px); }
+}
+
+/* ---------- 选牌阶段 — 堆叠式 ---------- */
+.selection-area {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 80vh;
+  padding: 10px 0 30px;
+}
+.selection-hint {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+.selection-hint span {
+  color: var(--gold);
+  font-weight: bold;
+}
+.selection-progress {
+  color: var(--gold-dim);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+/* —— 已选牌展示行（上方）—— */
+.selected-cards-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  min-height: 300px;
+  padding: 10px 0;
+  flex-wrap: wrap;
+}
+.selected-card-slot {
+  width: 180px;
+  height: 280px;
+  border: 2px dashed rgba(140, 180, 215, 0.3);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--blue);
+  font-size: 0.9rem;
+  transition: all 0.4s ease;
+  position: relative;
+  perspective: 800px;
+  transform-style: preserve-3d;
+}
+.selected-card-slot.filled {
+  border: 2px solid var(--blue);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(50, 100, 150, 0.3);
+  animation: slotFill 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes slotFill {
+  0%   { transform: scale(0.8); opacity: 0; }
+  50%  { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+.selected-card-slot .slot-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  position: absolute;
+  top: 0; left: 0;
+}
+.selected-card-slot .slot-card-img.hidden {
+  display: none;
+}
+.selected-card-slot .slot-placeholder {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* —— 牌堆区（下方）—— */
+.card-stack-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 280px;
+  padding: 20px 0;
+}
+.card-stack {
+  position: relative;
+  width: 400px;
+  height: 300px;
+  perspective: 800px;
+}
+/* 牌堆中的单张牌 */
+.stack-card {
+  position: absolute;
+  width: 130px;
+  height: 195px;
+  border-radius: 10px;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.3s ease,
+              box-shadow 0.3s ease;
+  transform-style: preserve-3d;
+  border: 1px solid var(--blue);
+  box-shadow: 0 3px 12px rgba(50, 90, 130, 0.25);
+}
+.stack-card:hover {
+  border-color: var(--blue-light);
+  box-shadow: 0 0 18px rgba(100, 160, 210, 0.45);
+}
+.stack-card.picked {
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(-120px) scale(0.7) !important;
+  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.35s ease 0.1s;
+}
+.stack-card .stack-card-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 9px;
+  background-color: #1e3a58;
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px),
+    repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px),
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(130,180,220,0.18) 0%, transparent 70%);
+  border: 3px solid #4a7898;
+  outline: 1px solid #7aaccc;
+  outline-offset: -6px;
+  box-shadow: inset 0 0 0 4px rgba(200,225,245,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+/* 四角星饰 */
+.stack-card .stack-card-inner::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  background:
+    radial-gradient(3px 3px at 0% 0%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(3px 3px at 100% 0%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(3px 3px at 0% 100%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(3px 3px at 100% 100%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(5px 5px at 0% 0%, rgba(180,215,240,0.5), transparent 70%),
+    radial-gradient(5px 5px at 100% 0%, rgba(180,215,240,0.5), transparent 70%),
+    radial-gradient(5px 5px at 0% 100%, rgba(180,215,240,0.5), transparent 70%),
+    radial-gradient(5px 5px at 100% 100%, rgba(180,215,240,0.5), transparent 70%);
+  z-index: 2;
+  pointer-events: none;
+}
+/* 中央曼陀罗 */
+.stack-card .stack-card-inner::after {
+  content: '';
+  position: absolute;
+  width: 65%;
+  height: 65%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background:
+    conic-gradient(from 0deg, transparent 10deg, rgba(180,210,240,0.2) 11deg, transparent 12deg,
+                             transparent 30deg, rgba(180,210,240,0.2) 31deg, transparent 32deg,
+                             transparent 50deg, rgba(180,210,240,0.2) 51deg, transparent 52deg,
+                             transparent 70deg, rgba(180,210,240,0.2) 71deg, transparent 72deg,
+                             transparent 90deg, rgba(180,210,240,0.2) 91deg, transparent 92deg,
+                             transparent 110deg, rgba(180,210,240,0.2) 111deg, transparent 112deg,
+                             transparent 130deg, rgba(180,210,240,0.2) 131deg, transparent 132deg,
+                             transparent 150deg, rgba(180,210,240,0.2) 151deg, transparent 152deg,
+                             transparent 170deg, rgba(180,210,240,0.2) 171deg, transparent 172deg,
+                             transparent 190deg, rgba(180,210,240,0.2) 191deg, transparent 192deg,
+                             transparent 210deg, rgba(180,210,240,0.2) 211deg, transparent 212deg,
+                             transparent 230deg, rgba(180,210,240,0.2) 231deg, transparent 232deg,
+                             transparent 250deg, rgba(180,210,240,0.2) 251deg, transparent 252deg,
+                             transparent 270deg, rgba(180,210,240,0.2) 271deg, transparent 272deg,
+                             transparent 290deg, rgba(180,210,240,0.2) 291deg, transparent 292deg,
+                             transparent 310deg, rgba(180,210,240,0.2) 311deg, transparent 312deg,
+                             transparent 330deg, rgba(180,210,240,0.2) 331deg, transparent 332deg,
+                             transparent 350deg, rgba(180,210,240,0.2) 351deg, transparent 352deg),
+    radial-gradient(circle, transparent 50%, rgba(150,200,235,0.3) 51%, rgba(150,200,235,0.3) 52%, transparent 53%),
+    radial-gradient(circle, transparent 37%, rgba(180,215,240,0.35) 38%, rgba(180,215,240,0.35) 39%, transparent 40%),
+    radial-gradient(circle, transparent 24%, rgba(200,225,245,0.4) 25%, rgba(200,225,245,0.4) 26%, transparent 27%),
+    radial-gradient(circle, rgba(100,160,215,0.25) 0%, rgba(70,130,190,0.2) 50%, transparent 70%),
+    radial-gradient(circle, rgba(220,235,250,0.6) 0%, rgba(180,210,240,0.3) 8%, transparent 20%);
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+.stack-card .stack-card-img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 7px;
+  z-index: 0;
+}
+.stack-card .stack-card-img.hidden {
+  display: none;
+}
+.stack-card .stack-card-star {
+  display: none;  /* 已由 ::after 曼陀罗图案替代 */
+}
+
+/* —— 揭晓按钮 —— */
+.reveal-btn-wrapper {
+  padding: 20px 0;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-reveal {
+  font-size: 1.2rem;
+  padding: 14px 48px;
+  letter-spacing: 0.1em;
+  animation: btnRevealIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes btnRevealIn {
+  from { transform: scale(0); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.btn-reveal:hover {
+  animation: btnGlow 1.5s ease-in-out infinite;
+}
+@keyframes btnGlow {
+  0%, 100% { box-shadow: 0 0 20px rgba(140, 190, 230, 0.2); }
+  50%      { box-shadow: 0 0 40px rgba(140, 190, 230, 0.5), 0 0 80px rgba(140, 190, 230, 0.15); }
+}
+
+/* —— 集体翻牌动画 —— */
+.selected-card-slot.flipping {
+  animation: flipReveal 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+@keyframes flipReveal {
+  0%   { transform: rotateY(0deg); }
+  100% { transform: rotateY(180deg); }
+}
+.selected-card-slot.flipped-done {
+  transform: rotateY(180deg);
+}
+.selected-card-slot .slot-front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 9px;
+  top: 0; left: 0;
+  overflow: hidden;
+  transform: rotateY(180deg);
+}
+.selected-card-slot .slot-front img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  z-index: 1;
+}
+.selected-card-slot .slot-front img.hidden {
+  display: none;
+}
+.selected-card-slot .slot-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: 9px;
+  top: 0; left: 0;
+  overflow: hidden;
+  background-color: #1e3a58;
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(255,255,255,0.02) 2px, rgba(255,255,255,0.02) 4px),
+    repeating-linear-gradient(-45deg, transparent, transparent 2px, rgba(255,255,255,0.015) 2px, rgba(255,255,255,0.015) 4px),
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(130,180,220,0.18) 0%, transparent 70%);
+  border: 3px solid #4a7898;
+  outline: 1px solid #7aaccc;
+  outline-offset: -6px;
+  box-shadow: inset 0 0 0 4px rgba(200,225,245,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* 四角星饰 */
+.selected-card-slot .slot-back::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  background:
+    radial-gradient(3px 3px at 0% 0%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(3px 3px at 100% 0%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(3px 3px at 0% 100%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(3px 3px at 100% 100%, rgba(200,225,245,0.7) 0%, transparent 100%),
+    radial-gradient(5px 5px at 0% 0%, rgba(180,215,240,0.5), transparent 70%),
+    radial-gradient(5px 5px at 100% 0%, rgba(180,215,240,0.5), transparent 70%),
+    radial-gradient(5px 5px at 0% 100%, rgba(180,215,240,0.5), transparent 70%),
+    radial-gradient(5px 5px at 100% 100%, rgba(180,215,240,0.5), transparent 70%);
+  z-index: 1;
+  pointer-events: none;
+}
+/* 中央曼陀罗 */
+.selected-card-slot .slot-back::after {
+  content: '';
+  position: absolute;
+  width: 65%;
+  height: 65%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background:
+    conic-gradient(from 0deg, transparent 10deg, rgba(180,210,240,0.2) 11deg, transparent 12deg,
+                             transparent 30deg, rgba(180,210,240,0.2) 31deg, transparent 32deg,
+                             transparent 50deg, rgba(180,210,240,0.2) 51deg, transparent 52deg,
+                             transparent 70deg, rgba(180,210,240,0.2) 71deg, transparent 72deg,
+                             transparent 90deg, rgba(180,210,240,0.2) 91deg, transparent 92deg,
+                             transparent 110deg, rgba(180,210,240,0.2) 111deg, transparent 112deg,
+                             transparent 130deg, rgba(180,210,240,0.2) 131deg, transparent 132deg,
+                             transparent 150deg, rgba(180,210,240,0.2) 151deg, transparent 152deg,
+                             transparent 170deg, rgba(180,210,240,0.2) 171deg, transparent 172deg,
+                             transparent 190deg, rgba(180,210,240,0.2) 191deg, transparent 192deg,
+                             transparent 210deg, rgba(180,210,240,0.2) 211deg, transparent 212deg,
+                             transparent 230deg, rgba(180,210,240,0.2) 231deg, transparent 232deg,
+                             transparent 250deg, rgba(180,210,240,0.2) 251deg, transparent 252deg,
+                             transparent 270deg, rgba(180,210,240,0.2) 271deg, transparent 272deg,
+                             transparent 290deg, rgba(180,210,240,0.2) 291deg, transparent 292deg,
+                             transparent 310deg, rgba(180,210,240,0.2) 311deg, transparent 312deg,
+                             transparent 330deg, rgba(180,210,240,0.2) 331deg, transparent 332deg,
+                             transparent 350deg, rgba(180,210,240,0.2) 351deg, transparent 352deg),
+    radial-gradient(circle, transparent 50%, rgba(150,200,235,0.3) 51%, rgba(150,200,235,0.3) 52%, transparent 53%),
+    radial-gradient(circle, transparent 37%, rgba(180,215,240,0.35) 38%, rgba(180,215,240,0.35) 39%, transparent 40%),
+    radial-gradient(circle, transparent 24%, rgba(200,225,245,0.4) 25%, rgba(200,225,245,0.4) 26%, transparent 27%),
+    radial-gradient(circle, rgba(100,160,215,0.25) 0%, rgba(70,130,190,0.2) 50%, transparent 70%),
+    radial-gradient(circle, rgba(220,235,250,0.6) 0%, rgba(180,210,240,0.3) 8%, transparent 20%);
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+}
+.selected-card-slot .slot-back img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  z-index: 1;
+}
+.selected-card-slot .slot-back img.hidden {
+  display: none;
+}
+
+/* ---------- 结果展示 ---------- */
+.result-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.result-header h2 {
+  font-family: var(--font-display);
+  color: var(--blue-deep);
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+.result-meta {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* 结果页 — 大幅卡片展示 */
+.result-cards-showcase {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+  padding: 16px 0;
+}
+.showcase-card {
+  text-align: center;
+  width: 180px;
+  flex-shrink: 0;
+}
+.showcase-card-image {
+  width: 180px;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 2px solid var(--blue);
+  box-shadow: 0 4px 24px rgba(50, 100, 150, 0.25);
+  background: linear-gradient(135deg, #1e3a58, #2e5070);
+  display: block;
+  margin: 0 auto;
+}
+.showcase-card-image.hidden {
+  display: none;
+}
+.showcase-card-name {
+  font-family: var(--font-display);
+  color: #2d5370;
+  font-size: 1rem;
+  margin-top: 10px;
+}
+.showcase-card-position {
+  font-size: 0.8rem;
+  color: var(--blue);
+  margin-bottom: 2px;
+}
+.showcase-card-orientation {
+  font-size: 0.8rem;
+  margin-top: 2px;
+}
+.showcase-card-orientation.upright { color: var(--blue-light); }
+.showcase-card-orientation.reversed { color: var(--red-mystic); }
+
+.result-spread-viz {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 75%;
+  margin-bottom: 32px;
+  border: 1px solid rgba(140, 175, 210, 0.2);
+  border-radius: var(--radius);
+  background: rgba(240, 245, 252, 0.5);
+  overflow: hidden;
+}
+.viz-card-image {
+  width: 50px;
+  height: 78px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid var(--blue);
+  margin: 0 auto 6px;
+  display: block;
+  background: linear-gradient(135deg, #1e3a58, #2e5070);
+}
+.viz-card-image.hidden {
+  display: none;
+}
+
+/* 解读卡片 */
+.interpretation-card {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(140, 175, 210, 0.18);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  margin-bottom: 16px;
+  transition: var(--transition);
+}
+.interpretation-card:hover {
+  border-color: rgba(140, 185, 220, 0.35);
+}
+.interpretation-card .card-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.interpretation-card .card-thumb {
+  width: 100px;
+  height: 156px;
+  flex-shrink: 0;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid var(--blue);
+  box-shadow: 0 2px 12px rgba(50, 100, 150, 0.2);
+  background: linear-gradient(135deg, #1e3a58, #2e5070);
+}
+.interpretation-card .card-thumb.hidden {
+  display: none;
+}
+.interpretation-card .card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(140, 175, 210, 0.18);
+}
+.interpretation-card .card-position-badge {
+  background: rgba(100, 155, 210, 0.12);
+  color: var(--blue-deep);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+.interpretation-card .card-name-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  color: var(--text-primary);
+}
+.interpretation-card .card-orientation-badge {
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.interpretation-card .card-orientation-badge.upright {
+  background: rgba(100, 155, 210, 0.18);
+  color: var(--blue-deep);
+}
+.interpretation-card .card-orientation-badge.reversed {
+  background: rgba(180, 100, 112, 0.18);
+  color: var(--red-mystic);
+}
+.interpretation-card .keywords {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+.interpretation-card .keyword-tag {
+  background: rgba(100, 155, 210, 0.12);
+  color: #3a5d78;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+.interpretation-card .interpretation-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  white-space: pre-line;
+}
+
+/* 综合总结 */
+.summary-card {
+  background: linear-gradient(135deg, rgba(140, 190, 225, 0.1), rgba(180, 210, 240, 0.1));
+  border: 1px solid rgba(140, 185, 220, 0.3);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+.summary-card h3 {
+  font-family: var(--font-display);
+  color: var(--blue-deep);
+  font-size: 1.3rem;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.summary-card .summary-text {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.9;
+  white-space: pre-line;
+}
+
+/* ---------- 底部操作栏 ---------- */
+.action-bar {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+
+/* ---------- 历史记录 ---------- */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.history-item {
+  background: var(--bg-glass);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(140, 175, 210, 0.15);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.history-item:hover {
+  border-color: rgba(140, 185, 220, 0.35);
+}
+.history-item .history-content {
+  flex: 1;
+  min-width: 0;
+}
+.history-item .history-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.history-item .history-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.history-item .history-spread {
+  font-size: 0.85rem;
+  color: var(--blue-deep);
+}
+.history-item .history-question {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-top: 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.history-empty {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 40px;
+}
+
+/* 历史记录 — 选中状态 */
+.history-item.selected {
+  border-color: var(--blue) !important;
+  background: rgba(140, 190, 225, 0.14) !important;
+}
+
+/* 历史记录 — 管理模式 */
+.history-item.manage-mode {
+  cursor: pointer;
+}
+
+/* 多选复选框 */
+.history-checkbox {
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+.history-checkbox .checkmark {
+  font-size: 1.3rem;
+  color: var(--blue);
+  cursor: pointer;
+  user-select: none;
+  transition: var(--transition);
+}
+.history-item.selected .history-checkbox .checkmark {
+  color: var(--blue-deep);
+}
+
+/* 单条删除按钮 */
+.history-delete-btn {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  line-height: 1;
+  padding: 0;
+  margin-top: -2px;
+}
+.history-delete-btn:hover {
+  color: #e06070;
+  border-color: rgba(220, 53, 69, 0.3);
+  background: rgba(220, 53, 69, 0.1);
+}
+
+/* 管理模式工具栏 */
+.manage-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 16px;
+  flex-wrap: wrap;
+}
+.manage-toolbar .manage-info {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-right: auto;
+}
+.manage-toolbar .manage-info strong {
+  color: var(--blue-deep);
+  font-size: 1.05rem;
+}
+
+/* 危险按钮 */
+.btn-danger {
+  background: rgba(220, 53, 69, 0.08);
+  border-color: rgba(220, 53, 69, 0.3);
+  color: #e06070;
+}
+.btn-danger:hover {
+  background: rgba(220, 53, 69, 0.18);
+  border-color: rgba(220, 53, 69, 0.5);
+  box-shadow: 0 0 16px rgba(220, 53, 69, 0.15);
+}
+.btn-danger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* 确认弹窗 */
+.confirm-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(20, 40, 60, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+  padding: 20px;
+}
+.confirm-dialog {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--blue);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 12px 48px rgba(50, 100, 150, 0.2);
+}
+.confirm-dialog p {
+  color: var(--text-primary);
+  font-size: 1rem;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* ---------- 页脚 ---------- */
+.footer {
+  text-align: center;
+  padding: 30px 0;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid rgba(140, 175, 210, 0.2);
+  margin-top: 40px;
+}
+
+/* 淡入动画 */
+.fade-in {
+  animation: fadeIn 0.6s ease both;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 滚动条美化 */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: rgba(190, 210, 235, 0.25); }
+::-webkit-scrollbar-thumb { background: var(--blue-light); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--blue); }
+
+/* ============================================================
+   响应式适配 — 移动端 & 平板
+   ============================================================ */
+
+/* —— 平板竖屏 (≤768px) —— */
+@media (max-width: 768px) {
+  body {
+    display: block;
+  }
+  .app-container {
+    padding: 20px 16px 50px;
+  }
+  .brand h1 {
+    font-size: 2.2rem;
+  }
+  .brand {
+    padding: 30px 0 16px;
+  }
+  /* 结果页 */
+  .result-header h2 {
+    font-size: 1.5rem;
+  }
+  .result-cards-showcase {
+    gap: 16px;
+  }
+  .showcase-card {
+    width: 150px;
+  }
+  .showcase-card-image {
+    width: 150px;
+    height: 234px;
+  }
+  .showcase-card-name {
+    font-size: 0.9rem;
+  }
+  /* 解读卡片 */
+  .interpretation-card {
+    padding: 18px 14px;
+  }
+  .interpretation-card .card-row {
+    gap: 12px;
+  }
+  .interpretation-card .card-thumb {
+    width: 90px;
+    height: 140px;
+  }
+  .interpretation-card .card-name-title {
+    font-size: 1.15rem;
+  }
+  .interpretation-card .card-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  /* 选牌区 */
+  .selected-cards-row {
+    gap: 14px;
+    min-height: 260px;
+  }
+  .selected-card-slot {
+    width: 150px;
+    height: 234px;
+    font-size: 0.8rem;
+  }
+  .selection-hint {
+    font-size: 1rem;
+  }
+  .card-stack {
+    width: 360px;
+    height: 280px;
+  }
+  .stack-card {
+    width: 115px;
+    height: 173px;
+  }
+  /* 牌阵 & 领域网格 */
+  .spread-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .domain-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* —— 大屏手机 (≤600px) —— */
+@media (max-width: 600px) {
+  .app-container {
+    padding: 16px 12px 40px;
+  }
+  .brand h1 {
+    font-size: 1.8rem;
+  }
+  .brand .subtitle {
+    font-size: 0.8rem;
+  }
+  /* 领域 */
+  .domain-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .domain-item {
+    padding: 14px 8px;
+  }
+  .domain-item .icon {
+    font-size: 1.6rem;
+  }
+  .domain-item .name {
+    font-size: 0.85rem;
+  }
+  .domain-item .desc {
+    font-size: 0.7rem;
+  }
+  /* 牌阵 */
+  .spread-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .spread-item {
+    padding: 14px;
+  }
+  /* 洗牌 */
+  .shuffle-deck {
+    width: 220px;
+    height: 270px;
+  }
+  .deck-card {
+    width: 110px;
+    height: 165px;
+    left: 50%;
+    top: 50%;
+    margin-left: -55px;
+    margin-top: -82px;
+  }
+  .shuffle-deck::before {
+    width: 180px;
+    height: 180px;
+    margin: -90px 0 0 -90px;
+  }
+  .shuffle-deck::after {
+    width: 240px;
+    height: 240px;
+    margin: -120px 0 0 -120px;
+  }
+  /* 选牌 — 已选区 */
+  .selection-area {
+    min-height: 75vh;
+  }
+  .selected-cards-row {
+    gap: 8px;
+    min-height: 200px;
+  }
+  .selected-card-slot {
+    width: 100px;
+    height: 156px;
+    font-size: 0.75rem;
+    border-radius: 8px;
+  }
+  .selection-hint {
+    font-size: 0.9rem;
+  }
+  .selection-progress {
+    font-size: 0.75rem;
+  }
+  .selected-card-slot .slot-placeholder {
+    font-size: 0.8rem;
+  }
+  .selected-card-slot .slot-back::after {
+    font-size: 1.3rem;
+  }
+  /* 选牌 — 牌堆 */
+  .card-stack {
+    width: 280px;
+    height: 220px;
+  }
+  .stack-card {
+    width: 95px;
+    height: 143px;
+  }
+  .stack-card .stack-card-star {
+    font-size: 1.4rem;
+  }
+  .btn-reveal {
+    font-size: 1rem;
+    padding: 12px 32px;
+  }
+  /* 结果 */
+  .result-header h2 {
+    font-size: 1.3rem;
+  }
+  .result-meta {
+    font-size: 0.75rem;
+    gap: 12px;
+  }
+  .result-cards-showcase {
+    gap: 8px;
+    padding: 8px 0;
+  }
+  .showcase-card {
+    width: 105px;
+  }
+  .showcase-card-image {
+    width: 105px;
+    height: 164px;
+  }
+  .showcase-card-name {
+    font-size: 0.85rem;
+    margin-top: 6px;
+  }
+  .showcase-card-position,
+  .showcase-card-orientation {
+    font-size: 0.7rem;
+  }
+  /* 解读 */
+  .interpretation-card {
+    padding: 14px 12px;
+    margin-bottom: 12px;
+  }
+  .interpretation-card .card-row {
+    flex-direction: column;
+    align-items: center;
+  }
+  .interpretation-card .card-thumb {
+    width: 80px;
+    height: 125px;
+  }
+  .interpretation-card .card-header {
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    text-align: center;
+  }
+  .interpretation-card .card-name-title {
+    font-size: 1.1rem;
+    width: 100%;
+  }
+  .interpretation-card .card-position-badge,
+  .interpretation-card .card-orientation-badge {
+    font-size: 0.72rem;
+    padding: 3px 8px;
+  }
+  .interpretation-card .interpretation-text {
+    font-size: 0.88rem;
+    line-height: 1.7;
+  }
+  .interpretation-card .keywords {
+    justify-content: center;
+  }
+  /* 总结 */
+  .summary-card {
+    padding: 20px 14px;
+  }
+  .summary-card h3 {
+    font-size: 1.1rem;
+  }
+  .summary-card .summary-text {
+    font-size: 0.88rem;
+    line-height: 1.8;
+  }
+  /* 操作栏 */
+  .action-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .action-bar .btn {
+    width: 100%;
+  }
+  /* 洗牌区 */
+  .shuffle-area {
+    padding: 24px 0;
+  }
+  .shuffle-hint {
+    font-size: 0.8rem;
+  }
+  /* 输入框 */
+  .textarea {
+    height: 100px;
+    font-size: 0.9rem;
+  }
+  /* 历史 */
+  .history-item {
+    padding: 12px 14px;
+  }
+  .history-item .history-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+  .history-delete-btn {
+    width: 34px;
+    height: 34px;
+    font-size: 1.1rem;
+  }
+  .manage-toolbar {
+    gap: 6px;
+  }
+  .manage-toolbar .manage-info {
+    font-size: 0.82rem;
+    width: 100%;
+    margin-bottom: 4px;
+  }
+  .confirm-dialog {
+    padding: 24px 18px;
+    max-width: 320px;
+  }
+  .confirm-dialog p {
+    font-size: 0.95rem;
+    margin-bottom: 18px;
+  }
+  /* 页脚 */
+  .footer {
+    padding: 20px 0;
+    font-size: 0.72rem;
+  }
+  /* 牌阵可视化 */
+  .result-spread-viz {
+    padding-bottom: 100%;
+  }
+}
+
+/* —— 小屏手机 (≤400px) —— */
+@media (max-width: 400px) {
+  .app-container {
+    padding: 12px 8px 32px;
+  }
+  .brand h1 {
+    font-size: 1.5rem;
+  }
+  .brand {
+    padding: 20px 0 12px;
+  }
+  /* 领域网格 — 2列防止挤压 */
+  .domain-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  .domain-item {
+    padding: 12px 6px;
+  }
+  .domain-item .icon {
+    font-size: 1.4rem;
+  }
+  .domain-item .name {
+    font-size: 0.8rem;
+  }
+  .domain-item .desc {
+    font-size: 0.65rem;
+  }
+  /* 选牌 — 已选区：3张横向排列 */
+  .selected-cards-row {
+    gap: 4px;
+    min-height: 160px;
+  }
+  .selected-card-slot {
+    width: 80px;
+    height: 125px;
+    border-width: 1px;
+  }
+  .selected-card-slot .slot-placeholder {
+    font-size: 0.7rem;
+  }
+  .selected-card-slot .slot-back::after {
+    font-size: 1rem;
+  }
+  /* 选牌 — 牌堆 */
+  .card-stack {
+    width: 250px;
+    height: 190px;
+  }
+  .stack-card {
+    width: 80px;
+    height: 120px;
+  }
+  .stack-card .stack-card-star {
+    font-size: 1.2rem;
+  }
+  .card-stack-wrapper {
+    min-height: 220px;
+    padding: 10px 0;
+  }
+  /* 洗牌 */
+  .shuffle-deck {
+    width: 180px;
+    height: 220px;
+  }
+  .deck-card {
+    width: 95px;
+    height: 143px;
+    left: 50%;
+    top: 50%;
+    margin-left: -47px;
+    margin-top: -71px;
+  }
+  .shuffle-deck::before {
+    width: 150px;
+    height: 150px;
+    margin: -75px 0 0 -75px;
+  }
+  .shuffle-deck::after {
+    width: 200px;
+    height: 200px;
+    margin: -100px 0 0 -100px;
+  }
+    height: 165px;
+  }
+  .deck-card {
+    width: 95px;
+    height: 143px;
+  }
+  .deck-card .back-pattern::after {
+    font-size: 1.5rem;
+  }
+  /* 结果 — 3张牌横向展示 */
+  .result-cards-showcase {
+    gap: 4px;
+  }
+  .showcase-card {
+    width: 85px;
+  }
+  .showcase-card-image {
+    width: 85px;
+    height: 133px;
+  }
+  .showcase-card-name {
+    font-size: 0.78rem;
+  }
+  .showcase-card-position,
+  .showcase-card-orientation {
+    font-size: 0.65rem;
+  }
+  .result-header h2 {
+    font-size: 1.15rem;
+  }
+  .result-meta {
+    font-size: 0.7rem;
+    gap: 8px;
+  }
+  /* 解读 */
+  .interpretation-card {
+    padding: 12px 8px;
+    border-radius: 8px;
+  }
+  .interpretation-card .card-thumb {
+    width: 70px;
+    height: 109px;
+  }
+  .interpretation-card .card-name-title {
+    font-size: 1rem;
+  }
+  .interpretation-card .interpretation-text {
+    font-size: 0.82rem;
+  }
+  /* 总结 */
+  .summary-card {
+    padding: 16px 10px;
+  }
+  .summary-card h3 {
+    font-size: 1rem;
+  }
+  .summary-card .summary-text {
+    font-size: 0.82rem;
+  }
+  /* 按钮 */
+  .btn {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+  }
+  .selection-hint {
+    font-size: 0.82rem;
+  }
+  .selection-progress {
+    font-size: 0.7rem;
+    margin-bottom: 8px;
+  }
+  .selection-area {
+    min-height: 70vh;
+  }
+  /* 输入框 */
+  .textarea {
+    height: 80px;
+    font-size: 0.85rem;
+  }
+  .input-group label {
+    font-size: 0.85rem;
+  }
+}

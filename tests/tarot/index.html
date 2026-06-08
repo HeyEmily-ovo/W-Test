@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="塔罗牌在线占卜 — 纯前端、无需注册、保护隐私。支持多种经典牌阵与深度解读。">
+  <title>🔮 塔罗占卜 — 聆听潜意识的低语</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="../../favicon.svg">
+</head>
+<body class="wt-has-nav">
+
+<!-- W-Test 返回导航 -->
+<nav class="wt-nav">
+    <a href="../../index.html">← 返回测试集合</a>
+    <span style="color:rgba(255,255,255,0.2);">|</span>
+    <span class="wt-nav-logo">W-Test</span>
+</nav>
+
+<div class="app-container">
+
+  <!-- ====== 页首品牌区 ====== -->
+  <div class="brand">
+    <h1>🔮 塔罗占卜</h1>
+    <p class="subtitle">T A R O T · 聆听潜意识的低语</p>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Screen 1: 领域选择 -->
+  <!-- ================================================================ -->
+  <div id="screen-domain" class="screen active">
+    <div class="card">
+      <p style="text-align:center;color:var(--text-secondary);margin-bottom:4px;">
+        请选择你想探索的领域
+      </p>
+      <div class="domain-grid">
+        <div class="domain-item selected" data-domain="general">
+          <span class="icon">🔮</span>
+          <span class="name">综合</span>
+          <span class="desc">综合运势解读</span>
+        </div>
+        <div class="domain-item" data-domain="love">
+          <span class="icon">💕</span>
+          <span class="name">感情</span>
+          <span class="desc">爱情与亲密关系</span>
+        </div>
+        <div class="domain-item" data-domain="career">
+          <span class="icon">💼</span>
+          <span class="name">事业</span>
+          <span class="desc">工作与职业发展</span>
+        </div>
+        <div class="domain-item" data-domain="study">
+          <span class="icon">📚</span>
+          <span class="name">学业</span>
+          <span class="desc">学习与考试</span>
+        </div>
+        <div class="domain-item" data-domain="finance">
+          <span class="icon">💰</span>
+          <span class="name">财运</span>
+          <span class="desc">金钱与投资</span>
+        </div>
+      </div>
+    </div>
+    <button id="btn-domain-next" class="btn btn-primary btn-block">
+      下一步 → 诉说你的困惑
+    </button>
+    <div class="action-bar">
+      <button id="btn-domain-history" class="btn btn-ghost">📜 查看历史记录</button>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Screen 2: 问题输入 -->
+  <!-- ================================================================ -->
+  <div id="screen-question" class="screen">
+    <div class="card">
+      <p style="text-align:center;color:var(--text-secondary);margin-bottom:8px;">
+        💭 在心中默念你的困惑，或写下来
+      </p>
+      <div class="input-group">
+        <label for="input-question">你的问题（可选）：</label>
+        <textarea
+          id="input-question"
+          class="textarea"
+          placeholder="例如：最近和男朋友总是吵架，不知道我们的未来会怎样…"
+          maxlength="200"
+        ></textarea>
+      </div>
+    </div>
+    <div class="action-bar">
+      <button id="btn-question-skip" class="btn btn-ghost">跳过</button>
+      <button id="btn-question-next" class="btn btn-primary">下一步 → 选择牌阵</button>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Screen 3: 牌阵选择 -->
+  <!-- ================================================================ -->
+  <div id="screen-spread" class="screen">
+    <div class="card">
+      <p style="text-align:center;color:var(--text-secondary);margin-bottom:4px;">
+        🃏 选择一种牌阵来探索你的问题
+      </p>
+      <div class="spread-grid" id="spread-grid">
+        <!-- JS 动态填充 -->
+      </div>
+    </div>
+    <button id="btn-spread-go" class="btn btn-primary btn-block">
+      ✨ 开始洗牌
+    </button>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Screen 4: 洗牌动画 -->
+  <!-- ================================================================ -->
+  <div id="screen-shuffle" class="screen">
+    <div class="shuffle-area">
+      <div class="shuffle-deck" id="shuffle-deck">
+        <div class="shuffle-particles" id="shuffle-particles"></div>
+        <div class="deck-card"><div class="back-pattern"><img class="deck-back-img" src="" alt="" onerror="this.style.display='none'" loading="lazy"></div></div>
+        <div class="deck-card"><div class="back-pattern"><img class="deck-back-img" src="" alt="" onerror="this.style.display='none'" loading="lazy"></div></div>
+        <div class="deck-card"><div class="back-pattern"><img class="deck-back-img" src="" alt="" onerror="this.style.display='none'" loading="lazy"></div></div>
+        <div class="deck-card"><div class="back-pattern"><img class="deck-back-img" src="" alt="" onerror="this.style.display='none'" loading="lazy"></div></div>
+        <div class="deck-card"><div class="back-pattern"><img class="deck-back-img" src="" alt="" onerror="this.style.display='none'" loading="lazy"></div></div>
+      </div>
+      <p class="shuffle-hint" id="shuffle-hint">👆 点击牌堆，开始与宇宙共振</p>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Screen 5: 选牌 -->
+  <!-- ================================================================ -->
+  <div id="screen-draw" class="screen">
+    <div class="selection-area">
+      <p class="selection-hint" id="selection-hint">请凭直觉，依次抽取 <span id="hint-count">3</span> 张牌</p>
+      <p class="selection-progress" id="draw-progress">已选 0 / 3</p>
+
+      <!-- 已选牌展示区（上方） -->
+      <div class="selected-cards-row" id="selected-cards-row"></div>
+
+      <!-- 牌堆区（下方） -->
+      <div class="card-stack-wrapper">
+        <div class="card-stack" id="card-stack">
+          <!-- JS 动态填充 -->
+        </div>
+      </div>
+
+      <!-- 揭晓按钮 -->
+      <div class="reveal-btn-wrapper" id="reveal-btn-wrapper">
+        <button class="btn btn-primary btn-reveal" id="btn-reveal">
+          ✨ 揭开命运
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Screen 6: 结果展示 -->
+  <!-- ================================================================ -->
+  <div id="screen-result" class="screen">
+    <div class="result-header">
+      <h2 id="result-spread-name">牌阵名称</h2>
+      <div class="result-meta">
+        <span id="result-domain">领域</span>
+        <span id="result-time">时间</span>
+      </div>
+    </div>
+
+    <!-- 抽到的牌 — 大幅展示 -->
+    <div class="result-cards-showcase" id="result-cards-showcase"></div>
+
+    <!-- 逐张解读 -->
+    <div id="interpretations"></div>
+
+    <!-- 综合总结 -->
+    <div class="summary-card">
+      <h3>🌙 综合解读</h3>
+      <div class="summary-text" id="summary-text"></div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="action-bar">
+      <button class="btn btn-primary" id="btn-new-reading">🔄 重新占卜</button>
+      <button class="btn" id="btn-view-history">📜 查看历史</button>
+    </div>
+  </div>
+
+  <!-- ================================================================ -->
+  <!-- Screen 7: 历史记录 -->
+  <!-- ================================================================ -->
+  <div id="screen-history" class="screen">
+    <h3 style="text-align:center;color:var(--gold);margin-bottom:20px;">📜 占卜记录</h3>
+
+    <!-- 管理模式工具栏 -->
+    <div class="manage-toolbar" id="manage-toolbar" style="display:none;">
+      <span class="manage-info">已选 <strong id="manage-selected-count">0</strong> 项</span>
+      <button class="btn btn-sm" id="btn-select-all">全选</button>
+      <button class="btn btn-sm btn-danger" id="btn-delete-selected" disabled>删除所选</button>
+      <button class="btn btn-sm btn-ghost" id="btn-cancel-manage">取消</button>
+    </div>
+
+    <div class="history-list" id="history-list"></div>
+    <div class="action-bar">
+      <button class="btn" id="btn-manage-mode">📋 管理模式</button>
+      <button class="btn btn-danger" id="btn-clear-all">🗑️ 清空全部</button>
+      <button class="btn btn-primary" id="btn-back-home">🏠 回到首页</button>
+    </div>
+  </div>
+
+  <!-- ====== 页脚 ====== -->
+  <div class="footer">
+    <p>✨ 塔罗是潜意识的镜子，照见的始终是你自己的智慧 ✨</p>
+    <p style="font-size:0.75rem;opacity:0.5;">© 2026 Tarot Tool. All rights reserved.</p>
+  </div>
+
+</div>
+
+<!-- ====== JS 库 ====== -->
+<script src="js/data.js"></script>
+<script src="js/spreads.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/app.js"></script>
+
+<!-- 初始化牌阵列表 & 卡背图 -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 初始化牌阵列表
+  const grid = document.getElementById('spread-grid');
+  const spreadEntries = Object.entries(SPREADS);
+
+  grid.innerHTML = spreadEntries.map(([id, s], i) => `
+    <div class="spread-item ${id === 'past_present_future' ? 'selected' : ''}"
+         data-spread="${id}"
+         style="animation: fadeSlideIn 0.4s ${i * 0.08}s both;">
+      <div class="spread-header">
+        <span class="spread-icon">${s.icon}</span>
+        <span class="spread-name">${s.name}</span>
+        <span class="spread-count">${s.cardCount}张</span>
+      </div>
+      <div class="spread-desc">${s.desc}</div>
+    </div>
+  `).join('');
+
+  // 设置洗牌牌堆的卡背图
+  var cardBackUrl = getCardBackUrl();
+  document.querySelectorAll('.deck-back-img').forEach(function(img) {
+    img.src = cardBackUrl;
+  });
+
+  // 事件绑定由 app.js 统一处理
+});
+</script>
+
+</body>
+</html>
