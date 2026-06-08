@@ -28,7 +28,8 @@ desktop.ini
 /test/
 /tests-output/
 *.png
-!tests/tarot/img/*.png
+*.webp
+!tests/tarot/img/*.webp
 .playwright-mcp/
 
 # 构建输出
