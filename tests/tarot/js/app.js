@@ -283,7 +283,6 @@ const App = {
       cardEl.style.left = (50 + offsetXPct) + '%';
       cardEl.style.top = (12 + offsetYPct) + '%';
       cardEl.style.transform = 'translateX(-50%) rotate(' + rotation + 'deg)';
-      cardEl.style.transform = 'rotate(' + rotation + 'deg)';
       cardEl.style.zIndex = zIndex;
 
       cardEl.innerHTML = `
@@ -316,37 +315,29 @@ const App = {
     // 标记牌堆中的牌为已选（飞走动画）
     stackCard.classList.add('picked');
 
-    // 预加载牌面图片
-    const preload = new Image();
-    preload.src = getCardImageUrl(cardData.id);
+    const cardFaceUrl = getCardImageUrl(cardData.id);
+    const cardBackUrl = getCardBackUrl();
 
-    // 填充对应槽位
+    // 立即填充槽位 — 卡背瞬间显示（浏览器已缓存），牌面后台加载
     const slot = document.getElementById('selected-slot-' + slotIndex);
-    preload.onload = () => {
-      slot.innerHTML = `
-        <div class="slot-front">
-          <img src="${getCardImageUrl(cardData.id)}" alt="${cardData.name}"
-               style="transform:${cardData.reversed ? 'rotate(180deg)' : ''}">
-        </div>
-        <div class="slot-back">
-          <img src="${getCardBackUrl()}" alt="" onerror="this.classList.add('hidden')">
-        </div>
-      `;
-      slot.classList.add('filled');
-    };
+    slot.innerHTML = `
+      <div class="slot-front">
+        <img class="slot-face-img" src="${cardFaceUrl}" alt="${cardData.name}"
+             style="transform:${cardData.reversed ? 'rotate(180deg)' : ''}">
+      </div>
+      <div class="slot-back">
+        <img src="${cardBackUrl}" alt="" onerror="this.classList.add('hidden')">
+      </div>
+    `;
+    slot.classList.add('filled');
+
+    // 后台确认牌面加载，失败则隐藏
+    const preload = new Image();
     preload.onerror = () => {
-      slot.innerHTML = `
-        <div class="slot-front">
-          <img src="${getCardImageUrl(cardData.id)}" alt="${cardData.name}"
-               class="hidden"
-               style="transform:${cardData.reversed ? 'rotate(180deg)' : ''}">
-        </div>
-        <div class="slot-back">
-          <img src="${getCardBackUrl()}" alt="" onerror="this.classList.add('hidden')">
-        </div>
-      `;
-      slot.classList.add('filled');
+      const faceImg = slot.querySelector('.slot-face-img');
+      if (faceImg) faceImg.classList.add('hidden');
     };
+    preload.src = cardFaceUrl;
 
     this.state.drawnCount++;
     this._updateDrawProgress();

@@ -951,6 +951,7 @@ body::after {
   width: 400px;
   height: 300px;
   perspective: 800px;
+  overflow: hidden;
 }
 /* 牌堆中的单张牌 */
 .stack-card {
@@ -2020,8 +2021,6 @@ body::after {
     width: 200px;
     height: 200px;
     margin: -100px 0 0 -100px;
-  }
-    height: 165px;
   }
   .deck-card {
     width: 95px;
